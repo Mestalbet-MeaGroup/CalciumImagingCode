@@ -1,4 +1,7 @@
 function [CorrsMat,SigMat, LagMat] = CalcPartialCorrParfor(t,ic);
+% Calculates the partial correlation, signficance and best lag given spikes
+% times and index channel (computes using parralelization).
+% Revision 1: Noah Levine-Small 27/06/13
 choices = VChooseK(1:size(ic,2),2);
 n1 = choices(:,1);
 n2 = choices(:,2);

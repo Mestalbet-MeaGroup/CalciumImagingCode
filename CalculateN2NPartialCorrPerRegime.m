@@ -1,4 +1,6 @@
 function [CorrMatSB,SigMatSB,LagMatSB,CorrMatNsb,SigMatNsb,LagMatNsb]= CalculateN2NPartialCorrPerRegime(t,ic,time);
+%Calculates the partial correlation between all electrodes within a network
+%firing regime. 
 [tSB,icSB,~,~,tNsb,icNsb,~,~]=SBsegmentation(t,ic,time',time);
 
 if ~isempty(tSB)
@@ -8,7 +10,9 @@ if ~isempty(tSB)
         waitbarwithtime(i/size(tSB,2),h);
     end
 end
-% Null hypothesis is that the correlation between r and s electrodes can be explained solely by the correlations of r and s to the mean field. 
+
+% Null hypothesis is that the correlation between r and s electrodes can be
+% explained solely by the correlations of r and s to the mean field. 
 
 if ~isempty(tNsb)
     h = waitbarwithtime(0,'Calculating Nsbs...');
