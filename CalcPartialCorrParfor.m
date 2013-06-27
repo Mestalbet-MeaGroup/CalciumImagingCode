@@ -1,4 +1,4 @@
-function [CorrsMat,SigMat] = CalcPartialCorrParfor(t,ic);
+function [CorrsMat,SigMat, LagMat] = CalcPartialCorrParfor(t,ic);
 choices = VChooseK(1:size(ic,2),2);
 n1 = choices(:,1);
 n2 = choices(:,2);
@@ -18,6 +18,7 @@ parfor ii=1:length(n1)
     if isempty(t1)||isempty(t2)
         rho(ii)=nan;
         pval(ii)=nan;
+        lag(ii)=nan;
     else
         temp1=[min(t1),min(t2)];
         temp2=[max(t1),max(t2)];
@@ -33,15 +34,17 @@ parfor ii=1:length(n1)
         [~,r2,~] = intersect(tt,t2);
         tt([r1;r2])=[];
         ttb = histc(tt,0:120:min(temp2));
-        [rho(ii),pval(ii)]=partialcorrwithlag(t1b,t2b,ttb,round(numel(ttb)*0.01));
+        [rho(ii),pval(ii),lag(ii)]=partialcorrwithlag(t1b,t2b,ttb,round(numel(ttb)*0.01));
     end
 end
 
 CorrsMat = zeros(size(ic,2),size(ic,2));
 SigMat = zeros(size(ic,2),size(ic,2));
+LagMat = zeros(size(ic,2),size(ic,2));
 for ii=1:length(n1)
     CorrsMat(n1(ii),n2(ii))=rho(ii);
     SigMat(n1(ii),n2(ii))=pval(ii);
+    LagMat(n1(ii),n2(ii))=lag(ii);
 end
 CorrsMat = CorrsMat + CorrsMat'+eye(size(CorrsMat));
 SigMat = SigMat + SigMat';

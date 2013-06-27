@@ -1,4 +1,4 @@
-function [rho,pval]=partialcorrwithlag(t1b,t2b,ttb,lag)
+function [rho,pval,lag]=partialcorrwithlag(t1b,t2b,ttb,lag)
 
 % t1=1:10;
 % t2=2:11;
