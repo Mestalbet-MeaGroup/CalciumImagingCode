@@ -12,7 +12,7 @@ function [rho,pval,lag]=partialcorrwithlag(t1b,t2b,ttb,lag)
 
 vec = -floor(lag/2):floor(lag/2);
 [~,idx]=max(xcorr(t1b,t2b,floor(lag/2)));
-if idx>=10
+if idx>10
     lag = vec(idx-10:idx+10);
 else
     lag  = vec(idx-idx+1:idx+idx);
