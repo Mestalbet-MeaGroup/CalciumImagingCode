@@ -1,4 +1,4 @@
-function burststarts=CalcCaOnsets(time,glia1)
+function burststarts=CalcCaOnsets(glia1)
 % Function to find the onsets of calcium increases from traces. Takes
 % filtered traces and time vector and returns the onset times for each
 % spike.
