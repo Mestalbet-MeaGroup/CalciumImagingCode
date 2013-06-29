@@ -1,0 +1,120 @@
+function [bs,be,bw]=UnsupervisedBurstDetection9Well(t,ic)
+% Function to detect the onset and offset of bursts (and super bursts)
+% Output:
+%       bs = burst start (time of detected burst beginning 1/12ms)
+%       be = burst end
+%       bw = time between end and start
+%       sbs = super burst start
+%       sbe = super burst end (empty if there are no detected super bursts)
+% Input: t (spike times in 1/12 ms) and index channel produced from
+%        BatchSpikeDetection.m or from McdPrepData.m
+% Algorithm:
+%       *Removes highly active neurons (neurons whose firing rate exceeds
+%        two standard deviations about the mean)
+%       *Calculates interspike intervals for each channel and convolutes
+%        with a guassian the overlap of ISIs
+%       *Places where the ISIs across multiple neurons goes from being
+%       short to long (or long to short) is defined as an event on/off set. Long ISIs
+%       are defined as larger than 83 ms.
+%       *Superbursts are defined as at least 6 consecutive network bursts
+%       with an IBI shorter than 8s.
+% Dependecies: FindNeuronFrequency.m, initfin.m
+% Written by Noah Levine-Small, Aug 08 2012.
+% Revision 2: 28/06/2013 *Some internal burst dynamics were counted as
+% bursts. Corrected by
+t=round(t);
+told=sort(t);
+sbs=[];
+sbe=[];
+
+[Firings,SumFirings]=FindNeuronFrequency(t,ic,100,1);
+frChanges = diff(Firings,[],2);
+stdFr = abs(std(frChanges'))./(sum(Firings,2))';
+[val,ix] = findpeaks(diff(diff(sort(stdFr,'descend'))));
+vals = sort(stdFr,'ascend');
+vals = vals(1:ix(1)+1);
+for i=1:size(vals,2)
+    toelim(i)=find(stdFr==vals(i),1,'First');
+end
+t(ic(3,toelim):ic(4,toelim));
+ic(:,toelim)=[];
+
+NeuNum=size(ic,2);
+bins=sparse(max(t)-min(t),NeuNum);
+
+for i=1:NeuNum
+    t1=sort(t(ic(3,i):ic(4,i)));
+    bs=t1(diff(t1)<1000);
+    bins(bs,i)=1;
+end
+
+gaussbins = filter(MakeGaussian(0,400,900),1,full(sum(bins,2)));
+gaussbins=smooth(gaussbins,5000);
+thrcross =  gaussbins >= (mean(gaussbins)+1.2*std(gaussbins));
+
+[bs,be]=initfin(thrcross');
+bw= be-bs;
+% tokeep=false(length(bs),1);
+% for i=1:length(bs)
+%     if sum(told>=bs(i)&told<be(i))/(NeuNum*bw(i))>0.009
+%         tokeep(i)=true;
+%     end
+% end
+% bs=bs(tokeep);
+% be=be(tokeep);
+% bw=bw(tokeep);
+% 
+% sb = diff(bs./12000)<=8; %IBI's less than 10s
+% [a,b]=initfin(sb);
+% sbs=bs(a);
+% sbe=be(b+1);
+% 
+% for i=1:numel(sbs)
+%     if numel(find(bs>=sbs(i)&bs<=sbe(i)))<6
+%         sbs(i)=nan;
+%         sbe(i)=nan;
+%     end
+% end
+% sbs(isnan(sbs))=[];
+% sbe(isnan(sbe))=[];
+% 
+% % make sure the next burst isn't within the same burst
+% inBet(1,:) = be(1:end-1);
+% inBet(2,:) = bs(2:end);
+% inBur(1,:) = bs(1:end-1);
+% inBur(2,:) = be(1:end-1);
+% [Firings,SumFirings]=FindNeuronFrequency(t,ic,10,1);
+% for i=1:length(bs)-1
+%     frDur = Firings(:,round(inBur(1,i)./(12*10)):round(inBur(2,i)./(12*10)));
+%     test(i) = numel(find(sum(frDur,2)>0))/size(frDur,1);
+%     frDiff(i) = mean(SumFirings(round(inBur(1,i)./(12*10)):round(inBur(2,i)./(12*10)))) - mean(SumFirings(round(inBet(1,i)./(12*10)):round(inBet(2,i)./(12*10)))) ;
+%     
+% end
+% 
+% ab = find(frDiff>=0);
+% ab1 = find(test>0.25);
+% acceptableBursts=intersect(ab,ab1);
+% bs = bs(acceptableBursts);
+% be = be(acceptableBursts);
+% % inBet1(1,:) = bs(1:end);
+% % inBet1(2,:) = be(1:end);
+% toelim=[];
+% for i=1:size(sbs,2)
+%     ind = find(bs>=sbs(i));
+%     ind2 = find(be<=sbe(i));
+%     toelim = [toelim,intersect(ind,ind2)];
+% end
+% bs(toelim)=[];
+% be(toelim)=[];
+% bs = [bs,sbs];
+% be= [be,sbe];
+% bs=sort(bs);
+% be=sort(be);
+
+
+% for i=2:size(inBet1,2)-1
+%     toelim(i) = inBet1(1,i)<inBet1(2,i-1);
+% end
+% bs = bs(~toelim);
+% be = be(~toelim);
+end
