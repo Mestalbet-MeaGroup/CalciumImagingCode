@@ -35,6 +35,10 @@ for i=1:size(chm,3)
     icWell{i}=ic2;
 end
 
+icBase=icWell(1:5);
+icGcamp = icWell(6:end);
+tBase = tWell(1:5);
+tGcamp = tWell(6:end);
 % for i=1:size(icWell,2)
 %     [~,SumFirings]=FindNeuronFrequency(t,icWell{i},25,1);
 %     figure; plot(SumFirings);
