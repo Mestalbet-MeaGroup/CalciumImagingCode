@@ -54,11 +54,20 @@ gaussbins=smooth(gaussbins,5000);
 thrcross =  gaussbins >= (mean(gaussbins)+1.2*std(gaussbins));
 
 [bs,be]=initfin(thrcross');
-[~,ix]=findpeaks(diff(sort(bs(2:end)-be(1:end-1))));
-ibi = bs(2:end) - be(1:end-1);
-ibis = sort(bs(2:end)-be(1:end-1));
-bs(find(ibi<=ibis(ix(1)+1)))=[];
-be(find(ibi<=ibis(ix(1)+1)))=[];
-bw= be-bs;
-ibi(find(ibi<=ibis(ix(1)+1)))=[];
+if length(bs)<2
+    bs=[];
+    bs=nan;
+    be=[];
+    be=nan;
+    bw=nan;
+    ibi=nan;
+else
+    [~,ix]=findpeaks(diff(sort(bs(2:end)-be(1:end-1))));
+    ibi = bs(2:end) - be(1:end-1);
+    ibis = sort(bs(2:end)-be(1:end-1));
+    bs(find(ibi<=ibis(ix(1)+1)))=[];
+    be(find(ibi<=ibis(ix(1)+1)))=[];
+    bw= be-bs;
+    ibi(find(ibi<=ibis(ix(1)+1)))=[];
+end
 end
