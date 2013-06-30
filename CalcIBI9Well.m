@@ -16,7 +16,6 @@ for i=1:size(icBase,2)
     bwB = [bwB,bw];
 end
 
-<<<<<<< HEAD
 %% Plotting
 
 [barsB,binsB]=hist(bwB,50);
@@ -29,6 +28,6 @@ figure;
 barsG = hist(ibiG,binsB);
 bar([barsB;barsG]','Grouped');
 title('Inter-burst-intervals');
-=======
+
 end
->>>>>>> e31ce6039bee9b359ef60fddc4d128f2f14b6bbc
+
