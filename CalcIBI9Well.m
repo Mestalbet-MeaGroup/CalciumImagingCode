@@ -13,3 +13,16 @@ for i=1:size(icBase,2)
     ibiB = [ibiB,ibi];
     bwB = [bwB,bw];
 end
+
+%% Plotting
+
+[barsB,binsB]=hist(bwB,50);
+barsG = hist(bwG,binsB);
+bar([barsB;barsG]','Grouped');
+title('Burst Widths');
+
+figure;
+[barsB,binsB]=hist(ibiB,40);
+barsG = hist(ibiG,binsB);
+bar([barsB;barsG]','Grouped');
+title('Inter-burst-intervals');
