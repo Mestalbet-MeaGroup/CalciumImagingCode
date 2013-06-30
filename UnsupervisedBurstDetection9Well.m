@@ -54,7 +54,7 @@ gaussbins=smooth(gaussbins,5000);
 thrcross =  gaussbins >= (mean(gaussbins)+1.2*std(gaussbins));
 
 [bs,be]=initfin(thrcross');
-if length(bs)<2
+if length(bs)<5
     bs=[];
     bs=nan;
     be=[];
