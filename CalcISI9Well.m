@@ -1,8 +1,4 @@
-icBase=icWell(1:5);
-icGcamp = icWell(6:end);
-tBase = tWell(1:5);
-tGcamp = tWell(6:end);
-
+function [isiG,isiB]=CalcISI9Well(tGcamp,icGcamp,tBase,icBase);
 isiG=[];
 for i=1:size(icGcamp,2)
     
@@ -15,4 +11,5 @@ for i=1:size(icBase,2)
     
      isiB = [isiB,CalculateISIs(tBase{i},icBase{i})];
     
+end
 end

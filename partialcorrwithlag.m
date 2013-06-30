@@ -9,14 +9,21 @@ function [rho,pval,lag]=partialcorrwithlag(t1b,t2b,ttb,lag)
 %         pval - Signficance of correlation score
 %         lag - Lag value for heighest partial correlation
 % Revision 1: Noah Levine-Small on 27/06/13
+% Revision 2: Noah Levine-Small on 27/06/13 *Added support for the case
+% where the maximum cross corr is found to be less than 10 samples from the
+% start of trace or less than 10 samples from the end of the trace.
 
 vec = -floor(lag/2):floor(lag/2);
 [~,idx]=max(xcorr(t1b,t2b,floor(lag/2)));
-if idx>=10
-    lag = vec(idx-10:idx+10);
-else
-    lag  = vec(idx-idx+1:idx+idx);
+
+if idx>10
+    if idx<length(vec)-10
+        lag = vec(idx-10:idx+10);
+    else
+        lag = vec(idx-10:end);
+    end
 end
+
 counter=1;
 for i=lag
 lt1b = lagmatrix(t1b,i);

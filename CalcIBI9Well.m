@@ -1,3 +1,5 @@
+function [ibiG,ibiB,bwG,bwB]=CalcIBI9Well(tGcamp,icGcamp,tBase,icBase);
+
 ibiG=[];
 bwG=[];
 for i=1:size(icGcamp,2)
@@ -5,15 +7,16 @@ for i=1:size(icGcamp,2)
     ibiG = [ibiG,ibi];
     bwG = [bwG,bw];
 end
-    
+
 ibiB=[];
 bwB=[];
-for i=1:size(icBase,2) 
+for i=1:size(icBase,2)
     [~,~,bw,ibi]=UnsupervisedBurstDetection9Well(tBase{i},icBase{i});
     ibiB = [ibiB,ibi];
     bwB = [bwB,bw];
 end
 
+<<<<<<< HEAD
 %% Plotting
 
 [barsB,binsB]=hist(bwB,50);
@@ -26,3 +29,6 @@ figure;
 barsG = hist(ibiG,binsB);
 bar([barsB;barsG]','Grouped');
 title('Inter-burst-intervals');
+=======
+end
+>>>>>>> e31ce6039bee9b359ef60fddc4d128f2f14b6bbc
