@@ -24,9 +24,9 @@ function [bs,be,bw,ibi]=UnsupervisedBurstDetection9Well(t,ic)
 % bursts. Corrected by smoothing gaussbins and lowering the threshold below
 % the internal burst dynamics.
 t=round(t);
-told=sort(t);
-sbs=[];
-sbe=[];
+
+tt=t;
+icc=ic;
 
 [Firings,SumFirings]=FindNeuronFrequency(t,ic,100,1);
 frChanges = diff(Firings,[],2);
@@ -55,12 +55,38 @@ thrcross =  gaussbins >= (mean(gaussbins)+1.2*std(gaussbins));
 
 [bs,be]=initfin(thrcross');
 if length(bs)<5
-    bs=[];
-    bs=nan;
-    be=[];
-    be=nan;
-    bw=nan;
-    ibi=nan;
+    t=tt;
+    ic=icc;
+    NeuNum=size(ic,2);
+    bins=sparse(max(t)-min(t),NeuNum);
+    
+    for i=1:NeuNum
+        t1=sort(t(ic(3,i):ic(4,i)));
+        bs=t1(diff(t1)<1000);
+        bins(bs,i)=1;
+    end
+    
+    gaussbins = filter(MakeGaussian(0,400,900),1,full(sum(bins,2)));
+    gaussbins=smooth(gaussbins,5000);
+    thrcross =  gaussbins >= (mean(gaussbins)+1.2*std(gaussbins));
+    
+    [bs,be]=initfin(thrcross');
+    if length(bs)<5
+        bs=[];
+        bs=nan;
+        be=[];
+        be=nan;
+        bw=nan;
+        ibi=nan;
+    else
+        [~,ix]=findpeaks(diff(sort(bs(2:end)-be(1:end-1))));
+        ibi = bs(2:end) - be(1:end-1);
+        ibis = sort(bs(2:end)-be(1:end-1));
+        bs(find(ibi<=ibis(ix(1)+1)))=[];
+        be(find(ibi<=ibis(ix(1)+1)))=[];
+        bw= be-bs;
+        ibi(find(ibi<=ibis(ix(1)+1)))=[];
+    end
 else
     [~,ix]=findpeaks(diff(sort(bs(2:end)-be(1:end-1))));
     ibi = bs(2:end) - be(1:end-1);
