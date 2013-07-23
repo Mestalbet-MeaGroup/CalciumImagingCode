@@ -12,7 +12,7 @@ STIMCHANNEL = [nan];     % can be used to delete a stimulation channel - don't c
 convert_SPIKECHANNEL = 1;
 xChannelthreshold = 1;
 
-PVPMOD(varargin);
+pvpmod(varargin);
 
 good_spikes = 1:length(EAfile.RAWDATA.SPIKETIME);
 % remove stimulation artefacts first if necessary/possible

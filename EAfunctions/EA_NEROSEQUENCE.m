@@ -9,7 +9,7 @@ function [EAfile,nero_channelmat,nero_timemat] = EA_NEROSEQUENCE(EAfile,varargin
 %
 dev_max=1; %0.1
 dev_dir = 'lower';
-PVPMOD(varargin)
+pvpmod(varargin)
 
 [SPIKETIME,id] = sort(EAfile.CLEANDATA.SPIKETIME);
 SPIKECHANNEL = EAfile.CLEANDATA.SPIKECHANNEL(id);

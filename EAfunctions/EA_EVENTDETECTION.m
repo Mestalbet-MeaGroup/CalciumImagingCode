@@ -22,7 +22,7 @@ min_EPNE = nan; % is calculated on the basis of number of channels with bursts (
 % minimal number of spikes per network event
 min_SPNE = 1;% is calculated on the basis of number of channels with bursts (eventsize >=3), but can be set here..
 
-PVPMOD(varargin)
+pvpmod(varargin);
  
 %sort according to spike channel (since EVENTID will have the same sorting)
 [EAfile.CLEANDATA.SPIKECHANNEL,id]=sort(EAfile.CLEANDATA.SPIKECHANNEL);

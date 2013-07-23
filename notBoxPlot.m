@@ -239,27 +239,26 @@ for k=1:length(X)
 end
 
 if strcmp(style,'line') | strcmp(style,'sdline')
-  for k=1:length(X)    
-    %Plot SD
-    h(k).sd=plot([X(k),X(k)],[mu(k)-SD(k),mu(k)+SD(k)],...
-                 '-','color',[0.2,0.2,1],'linewidth',2);
-    set(h(k).sd,'ZData',[1,1]*-1)
-  end
+%   for k=1:length(X)    
+%     %Plot SD
+%     h(k).sd=plot([X(k),X(k)],[mu(k)-SD(k),mu(k)+SD(k)],...
+%                  '-','color',[0.2,0.2,1],'linewidth',2);
+%     set(h(k).sd,'ZData',[1,1]*-1)
+%   end
 end
 
 if strcmp(style,'line')
-    for k=1:length(X)     
-        %Plot mean and SEM
-        h(k).mu=plot(X(k),mu(k),'o','color','r',...
-            'markerfacecolor','r',...
-            'markersize',10);
-        
-        h(k).sem=plot([X(k),X(k)],[mu(k)-SEM(k),mu(k)+SEM(k)],'-r',...
-            'linewidth',2);   
-        h(k).xAxisLocation=x(k);  
-    end
+%     for k=1:length(X)     
+%         %Plot mean and SEM
+%         h(k).mu=plot(X(k),mu(k),'o','color','r',...
+%             'markerfacecolor','r',...
+%             'markersize',10);
+%         
+%         h(k).sem=plot([X(k),X(k)],[mu(k)-SEM(k),mu(k)+SEM(k)],'-r',...
+%             'linewidth',2);   
+%         h(k).xAxisLocation=x(k);  
+%     end
 end
-
 
 
 
