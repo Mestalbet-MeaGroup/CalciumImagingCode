@@ -116,7 +116,7 @@ if nargin<2 || isempty(x)
 end
 
 if nargin<3 || isempty(jitter)
-    jitter=0.3; %larger value means greater amplitude jitter
+    jitter=0.6; %larger value means greater amplitude jitter
 end
 
 if nargin<4
