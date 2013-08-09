@@ -6,8 +6,8 @@ function EAfile = EA_EVENTDETECTION(EAfile,varargin)
 % AC_N = length(AC_SC);
 % single channel event detection
 min_SPE   = 1;            % define the minimal number of spikes to be an event
-max_ISI   = 100e3;        % maximal Interspike intervall to group spikes to events
-min_IEI   = 100e3;        % minimal interevent interval, events will otherwise be gouped 
+max_ISI   = 100e3;        % maximal Interspike interval to group spikes to events
+min_IEI   = 100e3;        % minimal interevent interval, events will otherwise be grouped 
 %network event detection onsets
 onset_window    = 25e3; % better use 50 or 75ms in some cases
 %network event detection offsets
@@ -22,7 +22,7 @@ min_EPNE = nan; % is calculated on the basis of number of channels with bursts (
 % minimal number of spikes per network event
 min_SPNE = 1;% is calculated on the basis of number of channels with bursts (eventsize >=3), but can be set here..
 
-pvpmod(varargin);
+PVPMOD(varargin);
  
 %sort according to spike channel (since EVENTID will have the same sorting)
 [EAfile.CLEANDATA.SPIKECHANNEL,id]=sort(EAfile.CLEANDATA.SPIKECHANNEL);

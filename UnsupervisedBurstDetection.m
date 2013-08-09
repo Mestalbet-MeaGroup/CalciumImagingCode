@@ -45,7 +45,7 @@ gaussbins = filter(MakeGaussian(0,300,900),1,full(sum(bins,2)));
 thrcross =  gaussbins >= (mean(gaussbins)+2*std(gaussbins));
 
 [bs,be]=initfin(thrcross');
-bw=(be-bs)./12; %burst widths in ms
+bw=(be-bs);%./12; %burst widths in ms
 % bs(bw<100)=[];
 % be(bw<100)=[];
 % bw(bw<100)=[];
@@ -62,7 +62,7 @@ for i=1:numel(sbs)
 end
 sbs(isnan(sbs))=[];
 sbe(isnan(sbe))=[];
-sbw=(sbe-sbs)./12;
+sbw=(sbe-sbs);%./12;
 % 
 % for i=1:numel(bs)
 % a=find(told>=bs(i),'1','First');

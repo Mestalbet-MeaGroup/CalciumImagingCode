@@ -45,7 +45,7 @@ drawglobalrate = 1;
 binsize = 10; %sec
 eventlines = 0;
 
-pvpmod(varargin)
+PVPMOD(varargin)
 % cut data to limits limits 
 id = find(EAfile.RAWDATA.SPIKETIME>(limits(1)*1e6) & EAfile.RAWDATA.SPIKETIME<(limits(2)*1e6));
 EAfile.RAWDATA.SPIKECHANNEL = EAfile.RAWDATA.SPIKECHANNEL(id); 

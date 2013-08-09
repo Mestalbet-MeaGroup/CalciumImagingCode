@@ -6,13 +6,13 @@ poststimulus_deadtime = 3e3; %5ms
 postswitch_deadtime = 3e3;
 % settings to remove synchronous artifact spikes
 synch_precision=0.1e3; %precision of spike timing
-NCtheta = numel(EAfile.RAWDATA.CHANNELMAP)*0.5; %minimal number of electrodes (usually such artifacts are detected by all electrodes)
+NCtheta = numel(EAfile.RAWDATA.CHANNELMAP)*0.3; %minimal number of electrodes (usually such artifacts are detected by all electrodes)
 STIMCHANNEL = [nan];     % can be used to delete a stimulation channel - don't confuse with stimchannel
 % REFERENCECHANNEL = EAfile.RAWDATA.REFERENCECHANNEL;% can be used to delete reference elctrode artifacts
 convert_SPIKECHANNEL = 1;
 xChannelthreshold = 1;
 
-pvpmod(varargin);
+PVPMOD(varargin);
 
 good_spikes = 1:length(EAfile.RAWDATA.SPIKETIME);
 % remove stimulation artefacts first if necessary/possible

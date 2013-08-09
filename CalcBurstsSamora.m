@@ -19,18 +19,18 @@ function [bs,be,SpikeOrder,varargout]=CalcBurstsSamora(t,ic,varargin);
 
 varargout{1}=[];
 %% Remove HA Channels
-[Firings,~]=FindNeuronFrequency(t,ic,25,1);
-% Create Matrix of Firing rates (spikes/sec) per recorded channel using 10 msec windows.
-frs=mean(Firings,2);
-thr = mean(frs)+std(frs);
-test=frs>=thr;
-a=find(test==1);
-if ~isempty(a)
-    removeme=ic(1,a);
-end
-for i=1:numel(removeme)
-    [t,ic]=removeNeuronsWithoutPrompt(t,ic,[removeme(i);1]);
-end
+% [Firings,~]=FindNeuronFrequency(t,ic,25,1);
+% % Create Matrix of Firing rates (spikes/sec) per recorded channel using 10 msec windows.
+% frs=mean(Firings,2);
+% thr = mean(frs)+std(frs);
+% test=frs>=thr;
+% a=find(test==1);
+% if ~isempty(a)
+%     removeme=ic(1,a);
+% end
+% for i=1:numel(removeme)
+%     [t,ic]=removeNeuronsWithoutPrompt(t,ic,[removeme(i);1]);
+% end
 
 ic = ConvertIC2Samora(ic);
 %% Setup Samora data structure for Samora's functions
@@ -49,7 +49,7 @@ EAfile = EA_CLEANDATA2(EAfile); %Remove artifacts and detect events
 % EAfile = EA_CLEANDATA2(EAfile,'avg_fr_theta',0,'synch_precision',1e-12);
 
 %% Run Samora burst detection
-EAfile = EA_EVENTDETECTION(EAfile,'min_EPNE',25);
+EAfile = EA_EVENTDETECTION(EAfile,'min_EPNE',10);
 bs=EAfile.EVENTDETECTION.NETWORKEVENTONSETS;
 be=EAfile.EVENTDETECTION.NETWORKEVENTOFFSETS;
 

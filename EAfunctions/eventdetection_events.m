@@ -15,7 +15,7 @@ min_IEI = 100e3;
 %% arguments list =================================
 %--------------------------------------------------
 % read in variable input to change default values
-pvpmod(varargin);
+PVPMOD(varargin);
 %--------------------------------------------------
 
 % length of Spiketrain

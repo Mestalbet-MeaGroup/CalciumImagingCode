@@ -22,7 +22,7 @@ min_SPNE = 3*min_EPNE;
 % arguments list =================================
 %--------------------------------------------------
 % read in variable input to change default values
-pvpmod(varargin);
+PVPMOD(varargin);
 %--------------------------------------------------
 %eventid up to fist spike in events
 temp = zeros(size(eventid));

@@ -9,7 +9,7 @@ glia1=(glia1-mean(glia1))/var(glia1) ;
 glia1=glia1-min(glia1);
 divglia1=diff(glia1);
 [pks,locs] = findpeaks(diff(glia1),'MINPEAKHEIGHT',mean(divglia1(divglia1>0)),'MINPEAKDISTANCE',50);
-
+onsets=[];
 locs = [1 locs'];
 counter=1;
 for i=1:size(locs,2)-1
