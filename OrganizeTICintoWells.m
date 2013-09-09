@@ -20,6 +20,7 @@ for i=1:size(chm,3)
         newT = [newT,temp];
     end
     ic2=[];
+    if ~isempty(ic1)
     ic2(3,1) = find(newT==t(ic1(3,1)),1,'First');
     indx = find(newT==t(ic1(4,1)));
     ic2(4,1) = indx(find(indx>ic2(3,1),1,'First'));
@@ -33,6 +34,10 @@ for i=1:size(chm,3)
     ic2(2,:)=ic1(2,:);
     tWell{i}=newT;
     icWell{i}=ic2;
+    else
+        tWell{i}=[];
+        icWell{i}=[];
+    end
 end
 
 icBase=icWell(1:5);

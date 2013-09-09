@@ -5,7 +5,7 @@ function col=colorcircle(x,y,M,N,varargin)
 %
 intensity=1;
 invert = 0;
-pvpmod(varargin);
+PVPMOD(varargin);
 
     centrex=(M+1)/2;
     centrey=(N+1)/2;

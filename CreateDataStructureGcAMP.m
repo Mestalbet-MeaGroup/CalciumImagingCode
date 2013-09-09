@@ -9,11 +9,23 @@ for ii=1:length(fileList)
     DataSet{ii}.icGcamp = icWell(6:end);
     DataSet{ii}.tBase = tWell(1:5);
     DataSet{ii}.tGcamp = tWell(6:end);
-    [DataSet{ii}.isiG, DataSet{ii}.isiB]=CalcISI9Well(DataSet{ii}.tGcamp,DataSet{ii}.icGcamp,DataSet{ii}.tBase,DataSet{ii}.icBase);
-    [DataSet{ii}.ibiG,DataSet{ii}.ibiB,DataSet{ii}.bwG,DataSet{ii}.bwB]=CalcIBI9Well(DataSet{ii}.tGcamp,DataSet{ii}.icGcamp,DataSet{ii}.tBase,DataSet{ii}.icBase);
-    [DataSet{ii}.frG,DataSet{ii}.frB]=CalcFR9Well(DataSet{ii}.tGcamp,DataSet{ii}.icGcamp,DataSet{ii}.tBase,DataSet{ii}.icBase,10000);
+
+    for i=1:size(DataSet{ii}.icBase,2)
+        if DataSet{ii}.tBase{i}>100
+            [DataSet{ii}.bsBase{i},DataSet{ii}.beBase{i},DataSet{ii}.bwBase{i},DataSet{ii}.ibiBase{i}]=UnsupervisedBurstDetection9Well(DataSet{ii}.tBase{i},DataSet{ii}.icBase{i});
+        else
+            DataSet{ii}.bsBase{i}=nan; DataSet{ii}.beBase{i}=nan; DataSet{ii}.bwBase{i}=nan;DataSet{ii}.ibiBase{i}=nan;
+        end
+    end
+    for i=1:size(DataSet{ii}.icGcamp,2)
+        if DataSet{ii}.tGcamp{i}>100
+            [DataSet{ii}.bsGcamp{i},DataSet{ii}.beGcamp{i},DataSet{ii}.bwGcamp{i},DataSet{ii}.ibiGcamp{i}]=UnsupervisedBurstDetection9Well(DataSet{ii}.tGcamp{i},DataSet{ii}.icGcamp{i});
+        else
+            DataSet{ii}.bsGcamp{i}=nan; DataSet{ii}.beGcamp{i}=nan; DataSet{ii}.bwGcamp{i}=nan;DataSet{ii}.ibiGcamp{i}=nan;
+        end
+    end
     clear_all_but('DataSet','ii','fileList');
 end
 
-save('DataSetGcamp6.mat','DataSet');
+% save('DataSetGcamp6.mat','DataSet');
 

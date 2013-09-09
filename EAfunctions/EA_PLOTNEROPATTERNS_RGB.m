@@ -18,7 +18,7 @@ limit = 2000e3;
 notitle=1;
 chm = EAfile.CLEANDATA.CHANNELMAP;
 % chm(chm==1025)=nan;
-pvpmod(varargin);
+PVPMOD(varargin);
 Nel = numel(find(EAfile.CLEANDATA.CHANNELMAP));
 chm = EAfile.CLEANDATA.CHANNELMAP;
 cm = createcolormap(chm,'intensity',intensity,'invert',invert,'N',Nel+1);
@@ -98,7 +98,7 @@ for ii=1:NCL
     f = histc(NERO_SINGLE_CLASS(NERO_SINGLE_CLASS<=Nel),1:(Nel-1));
     cl = 1:(Nel-1);
     cl=cl(f>=(size(NERO_SINGLE_CLASS,1)*f_min));
-    clfreq(ii,:) = f/size(NERO_SINGLE_CLASS,1); %#ok<AGROW> %% frequency is coded in intensity
+    clfreq(ii,:) = f/size(NERO_SINGLE_CLASS,1); % frequency is coded in intensity
     % most frequent order within the cluster
     for jj=1:length(cl);
         [r,c]=find(NERO_SINGLE_CLASS==cl(jj));

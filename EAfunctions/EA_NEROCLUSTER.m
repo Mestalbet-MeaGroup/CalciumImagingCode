@@ -12,7 +12,7 @@ show = 0;
 newfigure = 1;
 normalize = 'no'; %'overlap
 
-pvpmod(varargin);
+PVPMOD(varargin);
 
 nero_similaritymat = EAfile.NERO.NERO_SIMILARITYMAT;
 if isequal(normalize,'overlap'),

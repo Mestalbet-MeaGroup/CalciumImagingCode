@@ -15,10 +15,10 @@ function m=MakeRasterImage1(t,indexchannel,Tscale,Tcenter,WindowRes,SpikeWidth);
 
 Tstart=Tcenter-0.5*Tscale;
 Tend=Tcenter+0.5*Tscale;
-Nneurons=length(indexchannel); %number of neurons
+Nneurons=size(indexchannel,2); %number of neurons
 m=zeros(Nneurons,WindowRes);
 %index=find(indexchannel(5,:)==1);
-index=1:length(indexchannel);
+index=1:size(indexchannel,2);
 for i=1:Nneurons,
     tNeuron=t(indexchannel(3,index(i)):indexchannel(4,index(i)));  %find t on neuron i
     tNeuron=tNeuron(find(tNeuron>Tstart & tNeuron<Tend));   %reduce t to required window

@@ -5,7 +5,7 @@ function imagesc_RGB(image_mat,cm, varargin)
 % cm        : colormatrix (must have as many entries as image_mat)
 
 noentry = 0;
-pvpmod(varargin);
+PVPMOD(varargin);
 
 image_mat = uint16(image_mat);
 a = size(image_mat);

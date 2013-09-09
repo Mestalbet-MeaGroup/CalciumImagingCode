@@ -10,7 +10,7 @@ CHANNELMAT = EAfile.NERO.NERO_CHANNELMAT;
 N_NE = size(CHANNELMAT,1);
 NEID = 1:N_NE;
 
-pvpmod(varargin);
+PVPMOD(varargin);
 
 NEID = NEID(ismember(NEID,1:N_NE));
 CHANNELMAT = CHANNELMAT(NEID,:); 

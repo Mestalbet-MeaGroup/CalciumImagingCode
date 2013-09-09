@@ -27,7 +27,7 @@ intensity=1;
 invert =0;
 N = length(unique(find(~isnan(channelmap))));
 
-pvpmod(varargin);
+PVPMOD(varargin);
 
 % pvpmod(varargin);
 channelmap_colormap  = zeros(N,3);
