@@ -60,8 +60,8 @@ be=be+30*12;
 
 %% Determine network event rank order (NERO) sequences:
 EAfile = EA_NEROSEQUENCE(EAfile);
-% EAfile = EA_NEROSIMILARITY(EAfile);
-% EAfile = EA_NEROCLUSTER(EAfile);
+EAfile = EA_NEROSIMILARITY(EAfile);
+EAfile = EA_NEROCLUSTER(EAfile);
 EA_PLOTNEROSEQUENCE(EAfile);
 % SpikeOrder=EAfile.NERO.NERO_CHANNELMAT;
 % N = size(EAfile.NERO.NERO_CHANNELMAT,1);
