@@ -15,13 +15,13 @@ switch type
 end
           
 b=EAfile.NERO.NERO_CHANNELMAT(id,:); 
-
+% b(isnan(b))=0;
 cm = createcolormap(EAfile.CLEANDATA.CHANNELMAP,'intensity',3,'invert',1);
 % cm = createcolormap(EAfile.CLEANDATA.CHANNELMAP,'intensity',1,'invert',0);
-
+% cm = colormap([[1 1 1];flipud(jet(numel(EAfile.CLEANDATA.CHANNELMAP)))]);
 figure, 
-imagesc_RGB(b,cm); 
-set(gca,'CLIM',[1 numel(EAfile.CLEANDATA.CHANNELMAP)])
+imagesc_RGB(b,[[0,0,0];cm]); 
+% set(gca,'CLIM',[0 numel(EAfile.CLEANDATA.CHANNELMAP)])
 axis equal;
 axis image;
 ylabel('network event id');

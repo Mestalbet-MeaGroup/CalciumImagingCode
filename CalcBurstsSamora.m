@@ -31,7 +31,7 @@ varargout{1}=[];
 % for i=1:numel(removeme)
 %     [t,ic]=removeNeuronsWithoutPrompt(t,ic,[removeme(i);1]);
 % end
-
+icold=ic;
 ic = ConvertIC2Samora(ic);
 %% Setup Samora data structure for Samora's functions
 load('16x16MeaMap_90CW_Inverted.mat');
@@ -42,7 +42,7 @@ EAfile.RAWDATA.SPIKECHANNEL = ic;
 EAfile.RAWDATA.GROUNDEDCHANNEL = [];
 EAfile.RAWDATA.REFERENCECHANNEL = [];
 EAfile.INFO.FILE.LIMITS=[0,9.843999995291233e+09];
-clear t; clear ic;
+% clear t; clear ic;
 clear vec; clear MeaMap;
 EAfile = EA_CLEANDATA2(EAfile); %Remove artifacts and detect events
 %To maintain all spikes un-comment:
@@ -55,6 +55,7 @@ be=EAfile.EVENTDETECTION.NETWORKEVENTOFFSETS;
 
 bs=(bs./1000)'.*12; % Convert from microsecond to sample number (12khZ)
 be=(be./1000)'.*12;
+% PlotRasterWithBursts(t,icold,bs,be);
 bs=bs-30*12;
 be=be+30*12;
 
@@ -63,7 +64,7 @@ EAfile = EA_NEROSEQUENCE(EAfile);
 % EAfile = EA_NEROSIMILARITY(EAfile);
 % EAfile = EA_NEROCLUSTER(EAfile);
 EA_PLOTNEROSEQUENCE(EAfile);
-% SpikeOrder=EAfile.NERO.NERO_CHANNELMAT;
+SpikeOrder=EAfile.NERO.NERO_CHANNELMAT;
 % N = size(EAfile.NERO.NERO_CHANNELMAT,1);
 % figure,
 % for nn=1:N,

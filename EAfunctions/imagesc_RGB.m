@@ -4,7 +4,7 @@ function imagesc_RGB(image_mat,cm, varargin)
 % image_mat : vector with unique integer values within a certain range
 % cm        : colormatrix (must have as many entries as image_mat)
 
-noentry = 1;
+noentry = 0;
 PVPMOD(varargin);
 
 image_mat = uint16(image_mat);

@@ -13,8 +13,8 @@ onset_window    = 25e3; % better use 50 or 75ms in some cases
 %network event detection offsets
 offset_window   = 25e3;
 % merge network events that are to close (intervall between offset and onset)
-% onset_deadtime  = 25e3;
-onset_deadtime  = 2500e3;
+onset_deadtime  = 25e3;
+% onset_deadtime  = 2500e3;
 
 % network event definition (minimal number of events)
 % min_EPNE  =  ceil(0.5*(sqrt(1e6/((EAfile.INFO.MEA.PITCH)^2))+1)^2);
