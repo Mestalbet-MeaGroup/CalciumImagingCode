@@ -102,6 +102,6 @@ SpikeOrder=EAfile.NERO.NERO_CHANNELMAT;
 % EAfile = EA_NEROCLUSTER(EAfile);
 % 
 %% View Burst Propogation:
-% EA_PLOTNEROPATTERNS_RGB(EAfile,'mode','showall'); % or mode: 'motifs'
+EA_PLOTNEROPATTERNS_RGB(EAfile,'mode','showall'); % or mode: 'motifs'
 
 end
