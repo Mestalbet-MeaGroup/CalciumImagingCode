@@ -11,7 +11,10 @@ function [intensitymat, ROIcenters] = CreateTracesFromMaskSeq(mask,directory);
 % else
 %     nframes =  round(info.FileSize/info.StripByteCounts)-6;
 % end
-info = dir([directory '\' '*.tif']);
+info = dir([directory '\' '*.png']);
+if isempty(info)
+    info = dir([directory '\' '*.tif']);
+end
 meta.height=size(imread([directory '\' info(1).name]),1);
 meta.width=size(imread([directory '\' info(1).name]),2);
 meta.nframes=size(info,1);

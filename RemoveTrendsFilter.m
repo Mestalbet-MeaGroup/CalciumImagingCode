@@ -10,8 +10,8 @@ function Hd = RemoveTrendsFilter
 % Equiripple Highpass filter designed using the FIRPM function.
 
 % All frequency values are in Hz.
-Fs = 12.5;  % Sampling Frequency
-
+% Fs = 12.5;  % Sampling Frequency
+Fs = 14.235;  % Sampling with Zen
 Fstop = 0.0008;          % Stopband Frequency
 Fpass = 0.008;           % Passband Frequency
 Dstop = 0.1;             % Stopband Attenuation
@@ -26,3 +26,4 @@ b  = firpm(N, Fo, Ao, W, {dens});
 Hd = dfilt.dffir(b);
 
 % [EOF]
+end

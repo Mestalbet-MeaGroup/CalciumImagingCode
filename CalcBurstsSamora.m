@@ -63,7 +63,7 @@ be=be+30*12;
 EAfile = EA_NEROSEQUENCE(EAfile);
 % EAfile = EA_NEROSIMILARITY(EAfile);
 % EAfile = EA_NEROCLUSTER(EAfile);
-EA_PLOTNEROSEQUENCE(EAfile);
+% EA_PLOTNEROSEQUENCE(EAfile);
 SpikeOrder=EAfile.NERO.NERO_CHANNELMAT;
 % N = size(EAfile.NERO.NERO_CHANNELMAT,1);
 % figure,
@@ -102,6 +102,6 @@ SpikeOrder=EAfile.NERO.NERO_CHANNELMAT;
 % EAfile = EA_NEROCLUSTER(EAfile);
 % 
 %% View Burst Propogation:
-EA_PLOTNEROPATTERNS_RGB(EAfile,'mode','showall'); % or mode: 'motifs'
+% EA_PLOTNEROPATTERNS_RGB(EAfile,'mode','showall'); % or mode: 'motifs'
 
 end
