@@ -28,7 +28,7 @@ for i=1:length(astrindex)
     astros{i} = traces(:,astrindex(i));
 end
 
-for i=1:length(elecindex)
+parfor i=1:length(elecindex)
         t1=round(sort(channels{i}));
         Corrs(i)=NormalizedCorrelationwithStat(astros{i},fr{i},t1,time); % Calculates normalized unbiased correlation and compares to randomly permuted interspike interval trace. Returns NaN for non-significant correlation values.
 end
