@@ -17,7 +17,8 @@ if ~isempty(varargin)
         fr(:,i)  =  histc(t1,time*12000);
     end
     traces = traces(:,1:end-50);
-    time = time(:,1:end-50);
+    time   = time(:,1:end-50);
+    fr     = fr(:,1:end-50);
 end
 %% Remove outliers from trace
 fun =@(block_struct) deleteoutliers(block_struct.data, 0.05, 1);
