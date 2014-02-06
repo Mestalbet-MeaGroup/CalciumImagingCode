@@ -29,7 +29,7 @@ for ii=1:size(fileListTraces,1)
                 end
             end
             if strfind(fileListTIC{k},test)
-                sameCu=k;   
+                sameCu=k;
             end
         end
     end
@@ -53,15 +53,33 @@ for ii=1:size(fileListTraces,1)
     DataSet{ii}.RawTime      = linspace(triggers(1),triggers(end),size(intensitymat,2)); %Time when each image frame was taken
     DataSet{ii}.fs           = 1/mean(diff(DataSet{ii}.RawTime)); %Sampling rate
     [DataSet{ii}.Schematic,... %adjacency matrix of connects based on lags for max corr
-     DataSet{ii}.NodeID,...    %label for each node in adjacaceny matrix
-     DataSet{ii}.A2Ncc,...     %correlation between astro traces and gaussian kernel convolved neuronal FRs
-     DataSet{ii}.N2Ncc,...     %correlation between electrode FRs
-     DataSet{ii}.A2Acc,...     %correlation between filtered, df/f astrocyte traces
-     DataSet{ii}.FR,...        %firing rate profile for each channel taken with the same fs as the Ca imaging
-     DataSet{ii}.dfTraces,...  %df/f normalized traces
-     DataSet{ii}.dfTime]=CalcInteractions([],DataSet{ii}.ic,[], DataSet{ii}.triggers,DataSet{ii}.RawTraces,DataSet{ii}.t); %function to calcute all the above parameters 
+        DataSet{ii}.NodeID,...    %label for each node in adjacaceny matrix
+        DataSet{ii}.A2Ncc,...     %correlation between astro traces and gaussian kernel convolved neuronal FRs
+        DataSet{ii}.N2Ncc,...     %correlation between electrode FRs
+        DataSet{ii}.A2Acc,...     %correlation between filtered, df/f astrocyte traces
+        DataSet{ii}.FR,...        %firing rate profile for each channel taken with the same fs as the Ca imaging
+        DataSet{ii}.dfTraces,...  %df/f normalized traces
+        DataSet{ii}.dfTime]=CalcInteractions([],DataSet{ii}.ic,[], DataSet{ii}.triggers,DataSet{ii}.RawTraces,DataSet{ii}.t); %function to calcute all the above parameters
     DataSet{ii}.GFR          = mean(DataSet{ii}.FR,2); % Mean firing rate
     [DataSet{ii}.bs,DataSet{ii}.be,DataSet{ii}.bw,DataSet{ii}.sbs,DataSet{ii}.sbe,DataSet{ii}.sbw]=UnsupervisedBurstDetection2(DataSet{ii}.t,DataSet{ii}.ic); %burst detection
+    
+    DataSet{ii}.A2Ncorrmat=zeros(max(DataSet{ii}.A2Ncc(:,1)),max(DataSet{ii}.A2Ncc(:,2)));
+    for i=1:length(DataSet{ii}.A2Ncc(:,1));
+        DataSet{ii}.A2Ncorrmat(DataSet{ii}.A2Ncc(i,1),DataSet{ii}.A2Ncc(i,2))=DataSet{ii}.A2Ncc(i,4);
+    end
+   
+    DataSet{ii}.N2Ncorrmat=zeros(max(DataSet{ii}.N2Ncc(:,1)+1),max(DataSet{ii}.N2Ncc(:,2)));
+    for i=1:length(DataSet{ii}.N2Ncc(:,1));
+        DataSet{ii}.N2Ncorrmat(DataSet{ii}.N2Ncc(i,1),DataSet{ii}.N2Ncc(i,2))=DataSet{ii}.N2Ncc(i,4);
+    end
+    DataSet{ii}.N2Ncorrmat = DataSet{ii}.N2Ncorrmat + DataSet{ii}.N2Ncorrmat'+eye(size(DataSet{ii}.N2Ncorrmat));
+    
+    DataSet{ii}.A2Acorrmat=zeros(max(DataSet{ii}.A2Acc(:,1)+1),max(DataSet{ii}.A2Acc(:,2)));
+    for i=1:length(DataSet{ii}.A2Acc(:,1));
+        DataSet{ii}.A2Acorrmat(DataSet{ii}.A2Acc(i,1),DataSet{ii}.A2Acc(i,2))=DataSet{ii}.A2Acc(i,4);
+    end
+    DataSet{ii}.A2Acorrmat = DataSet{ii}.A2Acorrmat + DataSet{ii}.A2Acorrmat'+eye(size(DataSet{ii}.A2Acorrmat));
     display('Completed Loading Data...');
 end
 clear_all_but('DataSet');
+save('DataSet_GFAP_GcAMP6_withSchematic_withMask.mat','DataSet');
