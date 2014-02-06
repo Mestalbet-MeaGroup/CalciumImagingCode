@@ -70,7 +70,7 @@ image = imresize(image,[size(MeaImage,1) size(MeaImage,2)]);
 
 %% Plot 3D Figure
 color =jet(max(ix));
-colorscale = 1:max(ix);
+colorscale = 1:max(ix); % Each color is a different astrocyte
 max_x = size(MeaImage,1);
 max_y = size(MeaImage,2);
 scale = 0.96; %pixels/um
@@ -164,56 +164,56 @@ set(cb,'fontsize',18);
 print([name 'ccN2N_subsetFrom3Dplot.png'],'-dpng','-r400');
 close all;
 %% Find Within Group Correlation, Between Group Correlation
-findgroups = sum(paintCounter,2);
-groups = unique(findgroups);
-pc = paintCounter;
-if numel(unique(ix))~=numel(groups)
-    pc(:,1)=-1*pc(:,1);
-    findgroups = sum(pc,2);
-    groups = unique(findgroups);
-end
-for i=1:numel(groups)
-    indexG=find(findgroups==groups(i));
-    if numel(indexG)>2
-        combs = nchoosek(1:numel(indexG),2);
-        for ii=1:size(combs,1)
-            corr(ii) = cc1(combs(ii,1),combs(ii,2));
-        end
-        MeanCorrWithinG(i)=mean(corr);
-        STDCorrWithinG(i)=std(corr);
-        corr=[];
-    else
-        MeanCorrWithinG(i)=nan;
-        STDCorrWithinG(i)=nan;
-    end
-    ig{i}=indexG;
-end
-
-str1 = 'betGindex=allcomb(ig{1},';
-str2=[];
-for i=2:size(ig,2)
-    str2 = [str2 ['ig{' num2str(i) '},']];
-end
-str3 = [str1 str2(1:end-1) ');'];
-eval(str3);
-
-for i=1:size(betGindex,1)
-    corr(i)=cc1(betGindex(i,1),betGindex(i,2));
-end
-MeanCorrBetweenG=mean(corr(~isnan(corr)));
-STDCorrBetweenG=std(corr(~isnan(corr)));
-for i=1:size(ig,2)
-    paintBars(i,:) = paintCounter(ig{i}(1),:);
-end
-
-h = barwitherr([STDCorrWithinG STDCorrBetweenG],1:numel(unique(ix))+1,[MeanCorrWithinG MeanCorrBetweenG]);
-ch=get(h,'children');
-set(ch,'facevertexcdata',[paintBars;[0 0 0]]);
-for i=1:numel(unique(ix))
-    xtlabel{i} = '';
-end
-xtlabel{i+1} = 'Correlation Between Groups';
-set(gca,'XTick',1:numel(unique(ix))+1,'XTickLabel', xtlabel,'FontSize',18);
-print([name 'N2NgroupCCbarPlot.png'],'-dpng','-r400');
+% findgroups = sum(paintCounter,2);
+% groups = unique(findgroups);
+% pc = paintCounter;
+% if numel(unique(ix))~=numel(groups)
+%     pc(:,1)=-1*pc(:,1);
+%     findgroups = sum(pc,2);
+%     groups = unique(findgroups);
+% end
+% for i=1:numel(groups)
+%     indexG=find(findgroups==groups(i));
+%     if numel(indexG)>2
+%         combs = nchoosek(1:numel(indexG),2);
+%         for ii=1:size(combs,1)
+%             corr(ii) = cc1(combs(ii,1),combs(ii,2));
+%         end
+%         MeanCorrWithinG(i)=nanmean(corr);
+%         STDCorrWithinG(i)=sqrt(nanvar((corr)));
+%         corr=[];
+%     else
+%         MeanCorrWithinG(i)=nan;
+%         STDCorrWithinG(i)=nan;
+%     end
+%     ig{i}=indexG;
+% end
+% 
+% str1 = 'betGindex=allcomb(ig{1},';
+% str2=[];
+% for i=2:size(ig,2)
+%     str2 = [str2 ['ig{' num2str(i) '},']];
+% end
+% str3 = [str1 str2(1:end-1) ');'];
+% eval(str3);
+% 
+% for i=1:size(betGindex,1)
+%     corr(i)=cc1(betGindex(i,1),betGindex(i,2));
+% end
+% MeanCorrBetweenG=nanmean(corr);
+% STDCorrBetweenG=sqrt(nanvar(corr));
+% for i=1:size(ig,2)
+%     paintBars(i,:) = paintCounter(ig{i}(1),:);
+% end
+% 
+% h = barwitherr([STDCorrWithinG STDCorrBetweenG],1:numel(unique(ix))+1,[MeanCorrWithinG MeanCorrBetweenG]);
+% ch=get(h,'children');
+% set(ch,'facevertexcdata',[paintBars;[0 0 0]]);
+% for i=1:numel(unique(ix))
+%     xtlabel{i} = '';
+% end
+% xtlabel{i+1} = 'Correlation Between Groups';
+% set(gca,'XTick',1:numel(unique(ix))+1,'XTickLabel', xtlabel,'FontSize',18);
+% print([name 'N2NgroupCCbarPlot.png'],'-dpng','-r400');
 close all;
 end

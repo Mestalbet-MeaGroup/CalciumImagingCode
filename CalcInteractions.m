@@ -23,6 +23,7 @@ end
 %% Remove outliers from trace
 fun =@(block_struct) deleteoutliers(block_struct.data, 0.05, 1);
 traces = blockproc(traces,[1,size(traces,2)],fun,'UseParallel',true);
+traces = inpaint_nans(traces,4)+abs(min(traces(:)));
 %% Calculate correlation between every pair of electrode and astrocyte
 if size(traces,2)>size(traces,1)
     traces=traces';
