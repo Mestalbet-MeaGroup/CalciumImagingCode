@@ -18,10 +18,10 @@ if ~isempty(varargin)
     end
     traces = traces(:,1:end-50);
     time   = time(:,1:end-50);
-    fr     = fr(:,1:end-50);
+    fr     = fr(1:end-50,:);
 end
 %% Remove outliers from trace
-fun =@(block_struct) deleteoutliers(block_struct.data, 0.05, 1);
+fun =@(block_struct) deleteoutliers(block_struct.data, 0.01, 1);
 traces = blockproc(traces,[1,size(traces,2)],fun,'UseParallel',true);
 %% Calculate correlation between every pair of electrode and astrocyte
 if size(traces,2)>size(traces,1)
@@ -43,12 +43,12 @@ parfor i=1:size(combs,1)
     [lags(i),corrs(i)]=CalcCorr(trc{i},frs{i});
 end
 A2N = [neuros,astros,lags,corrs];
-corrs = (corrs-min(corrs))./(max(corrs)-min(corrs));
 %% Select optimum subset
 lags   = lags(corrs > nanmean(corrs)+sqrt(nanvar(corrs)));
 neuros = neuros(corrs > nanmean(corrs)+sqrt(nanvar(corrs)));
 astros = astros(corrs > nanmean(corrs)+sqrt(nanvar(corrs)));
 corrs  = corrs(corrs > nanmean(corrs)+sqrt(nanvar(corrs)));
+corrs = (corrs-min(corrs))./(max(corrs)-min(corrs));
 %% Calculate Electrode to Electrode lags for subset
 combs = nchoosek(1:size(fr,2),2);
 e1 = combs(:,1);
@@ -62,14 +62,14 @@ clear temp;
 parfor i=1:size(e1,1)
     [Elags(i),Ecorrs(i)]=CalcCorrNeuro(fr1{i},fr2{i});
 end
-N2N = [e1,e2,Elags,Ecorrs];
-Ecorrs = (Ecorrs-min(Ecorrs))./(max(Ecorrs)-min(Ecorrs));
+N2N = [e1,e2,Elags',Ecorrs'];
 %% Select optimum subset
 fac = 2;
 Elags   = Elags(Ecorrs > nanmean(Ecorrs)+fac*sqrt(nanvar(Ecorrs)));
 e1      = e1(Ecorrs > nanmean(Ecorrs)+fac*sqrt(nanvar(Ecorrs)));
 e2      = e2(Ecorrs > nanmean(Ecorrs)+fac*sqrt(nanvar(Ecorrs)));
 Ecorrs  = Ecorrs(Ecorrs > nanmean(Ecorrs)+fac*sqrt(nanvar(Ecorrs)));
+Ecorrs = (Ecorrs-min(Ecorrs))./(max(Ecorrs)-min(Ecorrs));
 %% Calculate Astrocyte to Astrocyte lags for subset
 combs = nchoosek(1:size(traces,2),2);
 a1 = combs(:,1);
@@ -83,13 +83,13 @@ clear temp;
 parfor i=1:size(a1,1)
     [Alags(i),Acorrs(i)]=CalcCorrAstro(tr1{i},tr2{i});
 end
-A2A = [a1,a2,Alags,Acorrs];
-Acorrs = (Acorrs-min(Acorrs))./(max(Acorrs)-min(Acorrs));
+A2A = [a1,a2,Alags',Acorrs'];
 %% Select optimum subset
 Alags   = Alags(Acorrs > nanmean(Acorrs)+sqrt(nanvar(Acorrs)));
 a1      = a1(Acorrs > nanmean(Acorrs)+sqrt(nanvar(Acorrs)));
 a2      = a2(Acorrs > nanmean(Acorrs)+sqrt(nanvar(Acorrs)));
 Acorrs  = Acorrs(Acorrs > nanmean(Acorrs)+sqrt(nanvar(Acorrs)));
+Acorrs = (Acorrs-min(Acorrs))./(max(Acorrs)-min(Acorrs));
 %% Calculate Network Schematic using Lags
 
 CorrSummary(1,:)=[ic(1,neuros),ic(1,e1),a1'+256];

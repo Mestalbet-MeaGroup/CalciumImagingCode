@@ -1,7 +1,7 @@
 function [lag,Corr] = CalcCorrAstro(a,b) %Between Astros and Astros
 maxlag = 1000;
-a=(a-mean(a))/var(a);
-b=(b-mean(b))/var(b);
+a=(a-nanmean(a))/nanvar(a);
+b=(b-nanmean(b))/nanvar(b);
 len = length(a); % also equal to length(b)
 
 auto_a = xcorr(a,'unbiased');
