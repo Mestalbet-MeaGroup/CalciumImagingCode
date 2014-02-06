@@ -1,7 +1,7 @@
 %% Create file list
 
-fileListTIC = getAllFiles(uigetdir); % select directory with Mat files containing t,ic,trigger variables
-fileListTraces = getAllFiles(uigetdir); % select directory with Mat files containing trace variables
+fileListTIC = getAllFiles(uigetdir('','Spike Data: t,ic,triggers')); % select directory with Mat files containing t,ic,trigger variables
+fileListTraces = getAllFiles(uigetdir('','Trace Data: intensitymat,time')); % select directory with Mat files containing trace variables
 
 
 if size(fileListTraces,1)~=size(fileListTIC,1)
@@ -43,7 +43,7 @@ for ii=1:size(fileListTraces,1)
         DataSet{ii}.error='mismatch';
         continue;
     end
-    
+    DataSet{ii}.mask=mask;
     DataSet{ii}.channel=channel(ii);
     DataSet{ii}.culture=culture(ii);
     DataSet{ii}.t            = t; % Spike times arranged by channel
