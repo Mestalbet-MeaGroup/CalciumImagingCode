@@ -62,7 +62,7 @@ for ii=1:size(fileListTraces,1)
         DataSet{ii}.dfTime]=CalcInteractions([],DataSet{ii}.ic,[], DataSet{ii}.triggers,DataSet{ii}.RawTraces,DataSet{ii}.t); %function to calcute all the above parameters
     DataSet{ii}.GFR          = mean(DataSet{ii}.FR,2); % Mean firing rate
     [DataSet{ii}.bs,DataSet{ii}.be,DataSet{ii}.bw,DataSet{ii}.sbs,DataSet{ii}.sbe,DataSet{ii}.sbw]=UnsupervisedBurstDetection2(DataSet{ii}.t,DataSet{ii}.ic); %burst detection
-    
+    % CorrMat
     DataSet{ii}.A2Ncorrmat=zeros(max(DataSet{ii}.A2Ncc(:,1)),max(DataSet{ii}.A2Ncc(:,2)));
     for i=1:length(DataSet{ii}.A2Ncc(:,1));
         DataSet{ii}.A2Ncorrmat(DataSet{ii}.A2Ncc(i,1),DataSet{ii}.A2Ncc(i,2))=DataSet{ii}.A2Ncc(i,4);
@@ -79,6 +79,24 @@ for ii=1:size(fileListTraces,1)
         DataSet{ii}.A2Acorrmat(DataSet{ii}.A2Acc(i,1),DataSet{ii}.A2Acc(i,2))=DataSet{ii}.A2Acc(i,4);
     end
     DataSet{ii}.A2Acorrmat = DataSet{ii}.A2Acorrmat + DataSet{ii}.A2Acorrmat'+eye(size(DataSet{ii}.A2Acorrmat));
+    % Lag mat
+    DataSet{ii}.A2Nlagmat=zeros(max(DataSet{ii}.A2Ncc(:,1)),max(DataSet{ii}.A2Ncc(:,2)));
+    for i=1:length(DataSet{ii}.A2Ncc(:,1));
+        DataSet{ii}.A2Nlagmat(DataSet{ii}.A2Ncc(i,1),DataSet{ii}.A2Ncc(i,2))=DataSet{ii}.A2Ncc(i,3);
+    end
+    
+    DataSet{ii}.N2Nlagmat=zeros(max(DataSet{ii}.N2Ncc(:,1)+1),max(DataSet{ii}.N2Ncc(:,2)));
+    for i=1:length(DataSet{ii}.N2Ncc(:,1));
+        DataSet{ii}.N2Nlagmat(DataSet{ii}.N2Ncc(i,1),DataSet{ii}.N2Ncc(i,2))=DataSet{ii}.N2Ncc(i,3);
+    end
+    DataSet{ii}.N2Nlagmat = DataSet{ii}.N2Nlagmat + DataSet{ii}.N2Nlagmat'+eye(size(DataSet{ii}.N2Nlagmat));
+    
+    DataSet{ii}.A2Alagmat=zeros(max(DataSet{ii}.A2Acc(:,1)+1),max(DataSet{ii}.A2Acc(:,2)));
+    for i=1:length(DataSet{ii}.A2Acc(:,1));
+        DataSet{ii}.A2Alagmat(DataSet{ii}.A2Acc(i,1),DataSet{ii}.A2Acc(i,2))=DataSet{ii}.A2Acc(i,3);
+    end
+    DataSet{ii}.A2Alagmat = DataSet{ii}.A2Alagmat + DataSet{ii}.A2Alagmat'+eye(size(DataSet{ii}.A2Alagmat));
+    
     display('Completed Loading Data...');
 end
 clear_all_but('DataSet');
