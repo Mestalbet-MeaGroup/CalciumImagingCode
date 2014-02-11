@@ -31,4 +31,16 @@ maximize(gcf);
 export_fig(['CorrMapA2N_' num2str(DataSet{i}.culture) ' ' num2str(DataSet{i}.channel) '.png'],'-native');
 close all;
 end
-
+% 
+% close all;
+% for i=1:size(DataSet,2)
+% ClusterIDs = ClusterNearbyROI(~DataSet{i}.mask);
+% [NCorrsm,ind,~]=DendrogramOrderMatrix2(DataSet{i}.A2Alagmat);
+% figure;
+% imagesc(DataSet{i}.A2Alagmat(ind,ind)); 
+% set(gca,'XTick',1:size(DataSet{i}.A2Alagmat,1),'XTickLabel',ind,'YTick',1:size(DataSet{i}.A2Alagmat,1),'YTickLabel',ind);
+% [xtextLabels,ytextLabels] = ColorTextLabels(gca,ClusterIDs(ind));
+% maximize(gcf);
+% % export_fig(['CorrMap_' num2str(DataSet{i}.culture) ' ' num2str(DataSet{i}.channel) '.png'],'-native');
+% % close all;
+% end
