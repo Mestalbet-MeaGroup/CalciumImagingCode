@@ -100,4 +100,4 @@ for ii=1:size(fileListTraces,1)
     display('Completed Loading Data...');
 end
 clear_all_but('DataSet');
-save('DataSet_GFAP_GcAMP6_withSchematic_withMask.mat','DataSet');
+save('DataSet_GFAP_GcAMP6_withSchematic_withMask_withLags.mat','DataSet');
