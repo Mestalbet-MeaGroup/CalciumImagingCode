@@ -9,6 +9,9 @@ function [AdMat,ids,A2N,N2N,A2A,fr,traces,time]=CalcInteractions(fr,ic,traces,va
 if ~isempty(varargin)
     triggers=varargin{1};
     intensitymat=varargin{2};
+    [remx,remy] = find(intensitymat>10*mean(intensitymat(:)));
+    intensitymat(remx,remy)=nan;
+    intensitymat = inpaint_nans(intensitymat,4); %Deals with artifact in culture 9
     t=varargin{3};
     rawTime=linspace(triggers(1),triggers(end),size(intensitymat,2));
     [traces,time]  = CalcDf_f(intensitymat,1/mean(diff(rawTime)),rawTime);
@@ -16,14 +19,15 @@ if ~isempty(varargin)
         t1=sort(t(ic(3,i):ic(4,i)));
         fr(:,i)  =  histc(t1,time*12000);
     end
-    traces = abs(traces(:,1:end-100));
+    traces = abs(traces(:,1:end-100))+abs(min(traces(:)));
     time   = time(:,1:end-100);
     fr     = fr(1:end-100,:);
 end
 %% Remove outliers from trace
-% fun =@(block_struct) deleteoutliers(block_struct.data, 0.01, 1);
+% fun =@(block_struct) deleteoutliers(block_struct.data, 0.001, 1);
 % traces = blockproc(traces,[1,size(traces,2)],fun,'UseParallel',true);
 % traces = inpaint_nans(traces,4)+abs(min(traces(:)));
+exit;
 %% Calculate correlation between every pair of electrode and astrocyte
 if size(traces,2)>size(traces,1)
     traces=traces';

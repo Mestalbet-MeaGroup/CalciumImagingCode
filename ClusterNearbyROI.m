@@ -35,7 +35,7 @@ clear cl1;
 for i=1:numel(ClusterIDs)
     ClustLabel{i} = num2str(ClusterIDs(i));
 end
-close all;
+% close all;
 imagesc(mask);
 text(cm1(:,1),cm1(:,2),cmLabel);
 
@@ -43,4 +43,5 @@ color = cbrewer('qual','Paired',max(ClusterIDs));
 for i=1:numel(ClusterIDs)
     text(cm1((i),1)+10,cm1((i),2)+10,ClustLabel{i},'BackgroundColor',color(ClusterIDs(i),:));
 end
+
 end
