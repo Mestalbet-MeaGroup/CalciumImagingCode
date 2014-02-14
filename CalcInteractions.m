@@ -66,6 +66,7 @@ clear temp;
 % parfor i=1:size(e1,1)
 %     [Elags(i),Ecorrs(i)]=CalcCorrNeuro(fr1{i},fr2{i});
 % end
+
 parfor i=1:size(e1,1)
 [Ecorrs(i),pval(i),Elags(i)]=partialcorrwithlag(fr1{i},fr2{i},sum(fr(:,((1:size(fr,2))~=e1(i)) & ((1:size(fr,2))~=e2(i)) ),2)',1000);
 end
