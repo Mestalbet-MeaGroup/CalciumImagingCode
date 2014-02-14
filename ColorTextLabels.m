@@ -1,11 +1,13 @@
 function [xtextLabels,ytextLabels] = ColorTextLabels(h,colorrange,varargin);
 % Function takes axes handle h and colors and replaces figure handle with
-% colors. optional: 'x' only colors x tick labels. 'y' only y tick labels.  Function returns handles to text labels
+% colors. optional: 'x' only colors x tick labels. 'y' only y tick labels.
+% Function returns handles to text labels. Also adds colorbars.
 
 xtextLabels=[]; ytextLabels=[];
+vals  = get(get(h,'children'),'CData');
 axis image;
 pos = get(h,'position');
-cb = colorbar('peer',h,'location','WestOutside');%,'position',[pos(1)-(pos(3).*0.005), pos(2), pos(3).*0.01, pos(4)]);
+cb = colorbar('peer',h,'location','WestOutside');
 postemp = get(cb,'position');
 set(cb,'position',[postemp(1),postemp(2),postemp(3)*0.5,postemp(4)]);
 
@@ -14,22 +16,22 @@ postemp = get(cb1,'position');
 set(cb1,'position',[postemp(1),postemp(2),postemp(3)*0.5,postemp(4)]);
 postemp = get(cb1,'position');
 cla(cb1);
-
-color = cbrewer('qual','Paired',max(colorrange));
+color = jet(max(colorrange));
+% color = cbrewer('qual','Paired',max(colorrange));
 if isempty(varargin)
     y = get(h, 'YLim' );
     xlabels = cellstr(get(h, 'XTickLabel' ));
     xvals = get(h, 'XTick' );
     for ll=1:numel(xvals)
-            xtextLabels(ll) = text( ...
-                'Units', 'Data', ...
-                'Position', [xvals(ll), y(2), 1], ...
-                'String', {'',xlabels{ll}}, ...
-                'Rotation',-30,...
-                'Parent', h, ...
-                'Clipping', 'off', ...
-                'Color', color(colorrange(ll),:), ...
-                'UserData', xvals(ll));
+        xtextLabels(ll) = text( ...
+            'Units', 'Data', ...
+            'Position', [xvals(ll), y(2), 1], ...
+            'String', {'',xlabels{ll}}, ...
+            'Rotation',-30,...
+            'Parent', h, ...
+            'Clipping', 'off', ...
+            'Color', color(colorrange(ll),:), ...
+            'UserData', xvals(ll));
         set(xtextLabels(ll), 'HorizontalAlignment','left','VerticalAlignment','top','FontSize',5)
     end
     set(h,'XTickLabel',[]);
@@ -104,9 +106,11 @@ else
             cb1 = colorbar(hc);
             freezeColors;
             colormap(hc,color);
-            set(cb,'XTick',[],'YTick',[]);
+            yticks = get(cb1,'YTick');
+            cblabels = linspace(min(vals(:)), max(vals(:)),numel(yticks));
+            set(cb1,'YTickLabel',cblabels, 'YColor',[1 1 1],'FontSize',10);
+            
             ylabel(cb,'Location Clusters','Color',[1,1,1],'FontSize',10);
-            set(cb1,'XTick',[],'YTick',[]);
             ylabel(cb1,'Correlation Magnitude','Color',[1,1,1],'FontSize',10);
         case 'y'
             x = get(h, 'XLim' );

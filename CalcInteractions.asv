@@ -63,6 +63,9 @@ temp = fr(:,e2);
 fr2=mat2cell(temp',ones(size(temp,2),1));
 clear temp;
 
+parfor i=1:numel(e1)
+fr3{i}=sum(fr(:,((1:size(fr,2))~=e1(i)) & ((1:size(fr,2))~=e2(i)) ),2);
+end
 % parfor i=1:size(e1,1)
 %     [Elags(i),Ecorrs(i)]=CalcCorrNeuro(fr1{i},fr2{i});
 % end
