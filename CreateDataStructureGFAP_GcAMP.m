@@ -59,7 +59,7 @@ for ii=1:size(fileListTraces,1)
         DataSet{ii}.A2Acc,...     %correlation between filtered, df/f astrocyte traces
         DataSet{ii}.FR,...        %firing rate profile for each channel taken with the same fs as the Ca imaging
         DataSet{ii}.dfTraces,...  %df/f normalized traces
-        DataSet{ii}.dfTime]=CalcInteractions([],DataSet{ii}.ic,[], DataSet{ii}.triggers,DataSet{ii}.RawTraces,DataSet{ii}.t); %function to calcute all the above parameters
+        DataSet{ii}.dfTime]=CalcInteractions2([],DataSet{ii}.ic,[], DataSet{ii}.triggers,DataSet{ii}.RawTraces,DataSet{ii}.t); %function to calcute all the above parameters
     DataSet{ii}.GFR          = mean(DataSet{ii}.FR,2); % Mean firing rate
     [DataSet{ii}.bs,DataSet{ii}.be,DataSet{ii}.bw,DataSet{ii}.sbs,DataSet{ii}.sbe,DataSet{ii}.sbw]=UnsupervisedBurstDetection2(DataSet{ii}.t,DataSet{ii}.ic); %burst detection
     % CorrMat

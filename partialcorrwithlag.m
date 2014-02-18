@@ -12,6 +12,11 @@ function [rho,pval,lag]=partialcorrwithlag(t1b,t2b,ttb,lag)
 % Revision 2: Noah Levine-Small on 27/06/13 *Added support for the case
 % where the maximum cross corr is found to be less than 10 samples from the
 % start of trace or less than 10 samples from the end of the trace.
+% Revision 3: Noah Levine-Small 17/02/14 *Performed mean/var normalization.
+
+% t1b = (t1b-nanmean(t1b))/nanvar(t1b);
+% t2b = (t2b-nanmean(t2b))/nanvar(t2b);
+% ttb = (ttb-nanmean(ttb))/nanvar(ttb);
 
 vec = -floor(lag/2):floor(lag/2);
 [~,idx]=max(xcorr(t1b,t2b,floor(lag/2)));
