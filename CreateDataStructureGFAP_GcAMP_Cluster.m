@@ -1,10 +1,7 @@
 %% Create file list
 
-% fileListTIC = getAllFiles(uigetdir('','Spike Data: t,ic,triggers')); % select directory with Mat files containing t,ic,trigger variables
-% fileListTraces = getAllFiles(uigetdir('','Trace Data: intensitymat,time')); % select directory with Mat files containing trace variables
-fileListTIC = getAllFiles('C:\Users\Noah\Documents\GitHub\deleteme\Spike Mat Files'); % select directory with Mat files containing t,ic,trigger variables
-fileListTraces = getAllFiles('C:\Users\Noah\Documents\GitHub\deleteme\Trace Mat Files'); % select directory with Mat files containing trace variables
-
+fileListTIC = getAllFiles('/home/nl1001/MdcsDataLocation/freiburg/R2013a/remote/Spike Mat Files/'); % select directory with Mat files containing t,ic,trigger variables
+fileListTraces = getAllFiles('/home/nl1001/MdcsDataLocation/freiburg/R2013a/remote/Trace Mat Files/'); % select directory with Mat files containing trace variables
 
 
 if size(fileListTraces,1)~=size(fileListTIC,1)

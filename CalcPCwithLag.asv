@@ -9,19 +9,16 @@ pv=pc;
 
 
 z1 = [ones(n,1) others];
+dz = d;
 
 for ii=1:v2s
 %     [pc(ii),pv(ii)]=partialcorr(v1,v2(:,ii),others);
 xx = [v1,v2(:,ii)];
 resid = xx - z1*(z1 \ xx);
-tol = max(n,d)*eps(class(xx))*sqrt(sum(abs(xx).^2,1));
+tol = max(n,dz)*eps(class(xx))*sqrt(sum(abs(xx).^2,1));
 resid(:,sqrt(sum(abs(resid).^2,1)) < tol) = 0;
 pc(ii) = sum(prod(resid,2)) ./ prod(sqrt(sum(abs(resid).^2,1)),2);
+
 end
-df = max(n - d - 2,0); % this is a matrix for 'pairwise'
-t = sign(pc) .* Inf;
-k = (abs(pc) < 1);
-t(k) = pc(k) ./ sqrt(1-pc(k).^2);
-t = sqrt(df).*t;
-pv = 2*tcdf(-abs(t),df);
+
 end

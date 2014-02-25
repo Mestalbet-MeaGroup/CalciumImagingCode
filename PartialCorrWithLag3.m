@@ -2,6 +2,7 @@ function [ParCor,Pval,lags,p1,p2] = PartialCorrWithLag3(mat,maxlag)
 % Function which accepts a time series and calculates the partialcorrelation over lags between
 % -maxlag and maxlag. Returns the significance, the correlation and the lag
 % vector.
+
 lags = -maxlag:1:maxlag;
 [m,n]=size(mat);
 if m<n
@@ -9,7 +10,8 @@ if m<n
     [m,n]=size(mat);
 end
 
-combs = VChooseKR(1:n,2);
+% combs = VChooseKR(int8(1:n),2);
+combs = nchoosek(int8(1:n),2);
 p1=combs(:,1);
 p2=combs(:,2);
 vec1=mat(:,p1);
@@ -18,6 +20,10 @@ numcom=numel(p1);
 clear combs;
 Pcorr=zeros(numcom,numel(lags));
 Pval=Pcorr;
+% others = cell(numcom,1);
+% for i=1:numcom
+% others{i}= mat(:,setdiff(repmat(1:n,1,numcom),[p1(i),p2(i)]));
+% end
 
 parfor i=1:numcom
     others = mat(:,setdiff(repmat(1:n,1,numcom),[p1(i),p2(i)]));
@@ -26,7 +32,8 @@ parfor i=1:numcom
     [Pcorr(i,:),Pval(i,:)] = CalcPCwithLag(vec1(:,i),v2,others);
 end
 Pcorr(Pval<0.05)=nan;
-ParCor=Pcorr; %Comment out if you uncomment below.
+[ParCor,ind]=max(Pcorr,[],2); %Comment out if you uncomment below.
+lags=lags(ind);
 
 %Uncomment if you want Pcorr to have the dimensions: Number of Time Series x Number of Time Series x Lags
 % ParCor = zeros(max(p1),max(p2),numel(lags));
@@ -35,4 +42,5 @@ ParCor=Pcorr; %Comment out if you uncomment below.
 % end
 % index = repmat(eye(max(p1),max(p2)),1,1,numel(lags));
 % ParCor(logical(index))=1;
+
 end

@@ -52,32 +52,38 @@ corrs  = corrs(corrs > nanmean(corrs)+sqrt(nanvar(corrs)));
 corrs = (corrs-min(corrs))./(max(corrs)-min(corrs));
 %% Calculate Electrode to Electrode lags for subset
 
-[Ecorrs,~,Elags,e1,e2] = PartialCorrWithLag3(fr,150);
-N2N = [e1,e2,Elags',Ecorrs'];
+[Ecorrs,~,Elags,e1,e2] = PartialCorrWithLag3(fr,10);
+e1 = double(e1);
+e2 = double(e2);
+Elags = Elags';
+N2N = [e1,e2,Elags,Ecorrs];
 
 %% Select optimum subset
-fac = 2;
-Elags   = Elags(Ecorrs > nanmean(Ecorrs)+fac*sqrt(nanvar(Ecorrs)));
-e1      = e1(Ecorrs > nanmean(Ecorrs)+fac*sqrt(nanvar(Ecorrs)));
-e2      = e2(Ecorrs > nanmean(Ecorrs)+fac*sqrt(nanvar(Ecorrs)));
-Ecorrs  = Ecorrs(Ecorrs > nanmean(Ecorrs)+fac*sqrt(nanvar(Ecorrs)));
-Ecorrs = (Ecorrs-min(Ecorrs))./(max(Ecorrs)-min(Ecorrs));
+% fac = 2;
+% Elags   = Elags(Ecorrs > nanmean(Ecorrs)+fac*sqrt(nanvar(Ecorrs)));
+% e1      = e1(Ecorrs > nanmean(Ecorrs)+fac*sqrt(nanvar(Ecorrs)));
+% e2      = e2(Ecorrs > nanmean(Ecorrs)+fac*sqrt(nanvar(Ecorrs)));
+% Ecorrs  = Ecorrs(Ecorrs > nanmean(Ecorrs)+fac*sqrt(nanvar(Ecorrs)));
+% Ecorrs = (Ecorrs-min(Ecorrs))./(max(Ecorrs)-min(Ecorrs));
 %% Calculate Astrocyte to Astrocyte lags for subset
-[Acorrs,~,Alags,a1,a2] = PartialCorrWithLag3(traces,150);
-A2A = [a1,a2,Alags',Acorrs'];
+[Acorrs,~,Alags,a1,a2] = PartialCorrWithLag3(traces,10);
+a1=double(a1);
+a2=double(a2);
+Alags=Alags';
+A2A = [a1,a2,Alags,Acorrs];
 
 %% Select optimum subset
-Alags   = Alags(Acorrs > nanmean(Acorrs)+sqrt(nanvar(Acorrs)));
-a1      = a1(Acorrs > nanmean(Acorrs)+sqrt(nanvar(Acorrs)));
-a2      = a2(Acorrs > nanmean(Acorrs)+sqrt(nanvar(Acorrs)));
-Acorrs  = Acorrs(Acorrs > nanmean(Acorrs)+sqrt(nanvar(Acorrs)));
-Acorrs = (Acorrs-min(Acorrs))./(max(Acorrs)-min(Acorrs));
+% Alags   = Alags(Acorrs > nanmean(Acorrs)+sqrt(nanvar(Acorrs)));
+% a1      = a1(Acorrs > nanmean(Acorrs)+sqrt(nanvar(Acorrs)));
+% a2      = a2(Acorrs > nanmean(Acorrs)+sqrt(nanvar(Acorrs)));
+% Acorrs  = Acorrs(Acorrs > nanmean(Acorrs)+sqrt(nanvar(Acorrs)));
+% Acorrs = (Acorrs-min(Acorrs))./(max(Acorrs)-min(Acorrs));
 %% Calculate Network Schematic using Lags
 
 CorrSummary(1,:)=[ic(1,neuros),ic(1,e1),a1'+256];
 CorrSummary(2,:)=[astros'+256,ic(1,e2),a2'+256];
-CorrSummary(3,:)=[corrs',Ecorrs,Acorrs]';
-CorrSummary(4,:)=[lags',Elags,Alags]';
+CorrSummary(3,:)=[corrs,Ecorrs,Acorrs]';
+CorrSummary(4,:)=[lags,Elags,Alags]';
 
 %% Restrict to Only Top Scores
 CorrSummary = CorrSummary(:,CorrSummary(3,:)>nanmean(CorrSummary(3,:))+sqrt(nanvar(CorrSummary(3,:))));
