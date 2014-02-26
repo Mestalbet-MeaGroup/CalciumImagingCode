@@ -32,15 +32,15 @@ parfor i=1:numcom
     [Pcorr(i,:),Pval(i,:)] = CalcPCwithLag(vec1(:,i),v2,others);
 end
 Pcorr(Pval<0.05)=nan;
-[ParCor,ind]=max(Pcorr,[],2); %Comment out if you uncomment below.
-lags=lags(ind);
+% [ParCor,ind]=max(Pcorr,[],2); %Comment out if you uncomment below.
+% lags=lags(ind);
 
 %Uncomment if you want Pcorr to have the dimensions: Number of Time Series x Number of Time Series x Lags
-% ParCor = zeros(max(p1),max(p2),numel(lags));
-% parfor l=1:numel(lags)
-%     ParCor(:,:,l) = full(sparse([p1; p2],[p2; p1],[Pcorr(:,l); Pcorr(:,l)]));
-% end
-% index = repmat(eye(max(p1),max(p2)),1,1,numel(lags));
-% ParCor(logical(index))=1;
+ParCor = zeros(max(p1),max(p2),numel(lags));
+parfor l=1:numel(lags)
+    ParCor(:,:,l) = full(sparse([p1; p2],[p2; p1],[Pcorr(:,l); Pcorr(:,l)]));
+end
+index = repmat(eye(max(p1),max(p2)),1,1,numel(lags));
+ParCor(logical(index))=1;
 
 end
