@@ -82,7 +82,7 @@ A2A = [a1,a2,Alags,Acorrs];
 
 CorrSummary(1,:)=[ic(1,neuros),ic(1,e1),a1'+256];
 CorrSummary(2,:)=[astros'+256,ic(1,e2),a2'+256];
-CorrSummary(3,:)=[corrs,Ecorrs,Acorrs]';
+CorrSummary(3,:)=[corrs;Ecorrs;Acorrs]';
 CorrSummary(4,:)=[lags,Elags,Alags]';
 
 %% Restrict to Only Top Scores
