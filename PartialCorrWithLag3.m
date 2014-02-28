@@ -11,7 +11,7 @@ if m<n
 end
 
 % combs = VChooseKR(int8(1:n),2);
-combs = nchoosek(int8(1:n),2);
+combs = nchoosek(1:n,2);
 p1=combs(:,1);
 p2=combs(:,2);
 vec1=mat(:,p1);
@@ -25,22 +25,22 @@ Pval=Pcorr;
 % others{i}= mat(:,setdiff(repmat(1:n,1,numcom),[p1(i),p2(i)]));
 % end
 
-parfor i=1:numcom
+for i=1:numcom
     others = mat(:,setdiff(repmat(1:n,1,numcom),[p1(i),p2(i)]));
     v2 = lagmatrix(vec2(:,i),lags);
     v2(isnan(v2))=0;
     [Pcorr(i,:),Pval(i,:)] = CalcPCwithLag(vec1(:,i),v2,others);
 end
-Pcorr(Pval<0.05)=nan;
-[ParCor,ind]=max(Pcorr,[],2); %Comment out if you uncomment below.
-lags=lags(ind);
+% Pcorr(Pval<0.05)=nan;
+% [ParCor,ind]=max(Pcorr,[],2); %Comment out if you uncomment below.
+% lags=lags(ind);
 
 %Uncomment if you want Pcorr to have the dimensions: Number of Time Series x Number of Time Series x Lags
-% ParCor = zeros(max(p1),max(p2),numel(lags));
-% parfor l=1:numel(lags)
-%     ParCor(:,:,l) = full(sparse([p1; p2],[p2; p1],[Pcorr(:,l); Pcorr(:,l)]));
-% end
-% index = repmat(eye(max(p1),max(p2)),1,1,numel(lags));
-% ParCor(logical(index))=1;
+ParCor = zeros(max(p1)+1,max(p2),numel(lags));
+for l=1:numel(lags)
+    ParCor(:,:,l) = full(sparse([p1; p2],[p2; p1],[Pcorr(:,l); Pcorr(:,l)]));
+end
+index = repmat(eye(max(p1)+1,max(p2)),1,1,numel(lags));
+ParCor(logical(index))=1;
 
 end

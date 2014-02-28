@@ -8,7 +8,7 @@ if size(fileListTraces,1)~=size(fileListTIC,1)
     error('Different number of trace files and electrode files');
 end
 
-for ii=1:size(fileListTraces,1)
+for ii=1%:size(fileListTraces,1)
     
     flags = isstrdigit(fileListTraces{ii});
     [a,b]=initfin(flags);
