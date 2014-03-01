@@ -2,8 +2,8 @@
 
 % fileListTIC = getAllFiles(uigetdir('','Spike Data: t,ic,triggers')); % select directory with Mat files containing t,ic,trigger variables
 % fileListTraces = getAllFiles(uigetdir('','Trace Data: intensitymat,time')); % select directory with Mat files containing trace variables
-fileListTIC = getAllFiles('C:\Users\Noah\Documents\GitHub\deleteme\Spike Mat Files'); % select directory with Mat files containing t,ic,trigger variables
-fileListTraces = getAllFiles('C:\Users\Noah\Documents\GitHub\deleteme\Trace Mat Files'); % select directory with Mat files containing trace variables
+fileListTIC = getAllFiles('D:\Users\zeiss\Documents\GitHub\deleteme\Spike Mat Files'); % select directory with Mat files containing t,ic,trigger variables
+fileListTraces = getAllFiles('D:\Users\zeiss\Documents\GitHub\deleteme\Trace Mat Files'); % select directory with Mat files containing trace variables
 
 
 
@@ -11,7 +11,7 @@ if size(fileListTraces,1)~=size(fileListTIC,1)
     error('Different number of trace files and electrode files');
 end
 
-for ii=1:size(fileListTraces,1)
+for ii=1%:size(fileListTraces,1)
     
     flags = isstrdigit(fileListTraces{ii});
     [a,b]=initfin(flags);
