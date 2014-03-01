@@ -31,25 +31,18 @@ for i=1:numcom
     v2(isnan(v2))=0;
     [Pcorr(i,:),Pval(i,:)] = CalcPCwithLag(vec1(:,i),v2,others);
 end
-<<<<<<< HEAD
-% Pcorr(Pval<0.05)=nan;
-% [ParCor,ind]=max(Pcorr,[],2); %Comment out if you uncomment below.
-% lags=lags(ind);
-=======
-Pcorr(Pval<0.05)=nan;
 %Comment out if you uncomment below.
+Pcorr(Pval<0.05)=nan;
 [ParCor,ind]=max(Pcorr,[],2); 
 lags=lags(ind);
 %Comment out if you uncomment below.
 
->>>>>>> 71a197c224eee4a5ddb2aca75a259c0b3ae9b3ed
-
 %Uncomment if you want Pcorr to have the dimensions: Number of Time Series x Number of Time Series x Lags
-ParCor = zeros(max(p1)+1,max(p2),numel(lags));
-for l=1:numel(lags)
-    ParCor(:,:,l) = full(sparse([p1; p2],[p2; p1],[Pcorr(:,l); Pcorr(:,l)]));
-end
-index = repmat(eye(max(p1)+1,max(p2)),1,1,numel(lags));
-ParCor(logical(index))=1;
-
+% ParCor = zeros(max(p1)+1,max(p2),numel(lags));
+% for l=1:numel(lags)
+%     ParCor(:,:,l) = full(sparse([p1; p2],[p2; p1],[Pcorr(:,l); Pcorr(:,l)]));
+% end
+% index = repmat(eye(max(p1)+1,max(p2)),1,1,numel(lags));
+% ParCor(logical(index))=1;
+%Uncomment if you want Pcorr to have the dimensions: Number of Time Series x Number of Time Series x Lags
 end
