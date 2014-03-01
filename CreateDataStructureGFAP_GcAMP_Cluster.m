@@ -1,7 +1,8 @@
 %% Create file list
 
-fileListTIC = getAllFiles('/home/nl1001/MdcsDataLocation/freiburg/R2013a/remote/Spike Mat Files/'); % select directory with Mat files containing t,ic,trigger variables
-fileListTraces = getAllFiles('/home/nl1001/MdcsDataLocation/freiburg/R2013a/remote/Trace Mat Files/'); % select directory with Mat files containing trace variables
+homedir = '/home/nl1001/MdcsDataLocation/freiburg/R2013a/remote/';
+fileListTIC = getAllFiles([homedir,'Spike Mat Files/']); % select directory with Mat files containing t,ic,trigger variables
+fileListTraces = getAllFiles([homedir,'Trace Mat Files/']); % select directory with Mat files containing trace variables
 
 
 if size(fileListTraces,1)~=size(fileListTIC,1)
@@ -99,5 +100,5 @@ for ii=1%:size(fileListTraces,1)
     
     display('Completed Loading Data...');
 end
-clear_all_but('DataSet');
-save('DataSet_GFAP_GcAMP6_withSchematic_withMask_withLags.mat','DataSet');
+% clear_all_but('DataSet','homedir');
+save([homedir,'DataSet_GFAP_GcAMP6_withSchematic_withMask_withLags_ParCor.mat'],'DataSet');
