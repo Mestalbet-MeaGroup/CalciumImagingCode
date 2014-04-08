@@ -3,8 +3,11 @@ home = [getenv('HOMEDRIVE') getenv('HOMEPATH')];
 homedir = [home,'\Documents\GitHub\CalciumImagingCode\DataSet\'];
 % homedir = '/home/nl1001/MdcsDataLocation/freiburg/R2013a/remote/';
 fileListTIC = getAllFiles([homedir,'Spike Mat Files/']); % select directory with Mat files containing t,ic,trigger variables
-fileListTraces = getAllFiles([homedir,'Trace Mat Files/']); % select directory with Mat files containing trace variables
-
+fileListTraces = getAllFiles([homedir,'Trace Mat Files/']); % select directory with Mat files containing trace variables:
+% ROIcenters: Coordinates for ROI centroids
+% Intensitymat: NroixFrames, raw trace values (average pixel intensity per frame per ROI)
+% mask: 2D binary matrix where ones indicate ROIs. Each ROIcenter corresponds to an ROI in the mask and to the Nroi dimension of intensitymat
+% region: Hippo output. Software used to select ROIs. 
 
 if size(fileListTraces,1)~=size(fileListTIC,1)
     error('Different number of trace files and electrode files');
