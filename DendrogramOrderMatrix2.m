@@ -36,8 +36,8 @@ close;
 vy=vn;
 Mat(notsig)=nan;
 NCorrs=Mat(vx,vy);
-vx(sum(isnan(NCorrs),2)==m1)=[];
-NCorrs(sum(isnan(NCorrs),2)==m1,:)=[];
+% vx(sum(isnan(NCorrs),2)==m1)=[];
+% NCorrs(sum(isnan(NCorrs),2)==m1,:)=[];
 
 %Plot
 % imagescnan(NCorrs);

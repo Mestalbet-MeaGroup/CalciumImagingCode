@@ -1,6 +1,7 @@
 %% Create file list
-
-homedir = '/home/nl1001/MdcsDataLocation/freiburg/R2013a/remote/';
+home = [getenv('HOMEDRIVE') getenv('HOMEPATH')];
+homedir = [home,'\Documents\GitHub\CalciumImagingCode\DataSet\'];
+% homedir = '/home/nl1001/MdcsDataLocation/freiburg/R2013a/remote/';
 fileListTIC = getAllFiles([homedir,'Spike Mat Files/']); % select directory with Mat files containing t,ic,trigger variables
 fileListTraces = getAllFiles([homedir,'Trace Mat Files/']); % select directory with Mat files containing trace variables
 
@@ -44,6 +45,7 @@ for ii=1%:size(fileListTraces,1)
         DataSet{ii}.error='mismatch';
         continue;
     end
+    
     DataSet{ii}.mask=mask;
     DataSet{ii}.channel=channel(ii);
     DataSet{ii}.culture=culture(ii);
@@ -55,20 +57,25 @@ for ii=1%:size(fileListTraces,1)
     DataSet{ii}.fs           = 1/mean(diff(DataSet{ii}.RawTime)); %Sampling rate
     [DataSet{ii}.Schematic,... %adjacency matrix of connects based on lags for max corr
         DataSet{ii}.NodeID,...    %label for each node in adjacaceny matrix
-        DataSet{ii}.A2Ncc,...     %correlation between astro traces and gaussian kernel convolved neuronal FRs
-        DataSet{ii}.N2Ncc,...     %correlation between electrode FRs
-        DataSet{ii}.A2Acc,...     %correlation between filtered, df/f astrocyte traces
+        DataSet{ii}.A2Npc,...     %correlation between astro traces and neuronal FRs (sampled at same rate) with correlations between neuronal FRs subtracted
+        DataSet{ii}.N2Npc,...     %partial correlation between electrode FRs
+        DataSet{ii}.A2Apc,...     %partial correlation between filtered, df/f astrocyte traces
         DataSet{ii}.FR,...        %firing rate profile for each channel taken with the same fs as the Ca imaging
         DataSet{ii}.dfTraces,...  %df/f normalized traces
-        DataSet{ii}.dfTime]=CalcInteractions2([],DataSet{ii}.ic,[], DataSet{ii}.triggers,DataSet{ii}.RawTraces,DataSet{ii}.t); %function to calcute all the above parameters
-    DataSet{ii}.GFR          = mean(DataSet{ii}.FR,2); % Mean firing rate
+        DataSet{ii}.dfTime]=CalcInteractions3([],DataSet{ii}.ic,[], DataSet{ii}.triggers,DataSet{ii}.RawTraces,DataSet{ii}.t); %function to calcute all the above parameters
+    
+    % Mean firing rate
+    DataSet{ii}.GFR          = mean(DataSet{ii}.FR,2); 
+    
+    % Burst Detect
     [DataSet{ii}.bs,DataSet{ii}.be,DataSet{ii}.bw,DataSet{ii}.sbs,DataSet{ii}.sbe,DataSet{ii}.sbw]=UnsupervisedBurstDetection2(DataSet{ii}.t,DataSet{ii}.ic); %burst detection
-    % CorrMat
+    
+    % CorrMats
     DataSet{ii}.A2Ncorrmat=zeros(max(DataSet{ii}.A2Ncc(:,1)),max(DataSet{ii}.A2Ncc(:,2)));
     for i=1:length(DataSet{ii}.A2Ncc(:,1));
         DataSet{ii}.A2Ncorrmat(DataSet{ii}.A2Ncc(i,1),DataSet{ii}.A2Ncc(i,2))=DataSet{ii}.A2Ncc(i,4);
     end
-   
+    
     DataSet{ii}.N2Ncorrmat=zeros(max(DataSet{ii}.N2Ncc(:,1)+1),max(DataSet{ii}.N2Ncc(:,2)));
     for i=1:length(DataSet{ii}.N2Ncc(:,1));
         DataSet{ii}.N2Ncorrmat(DataSet{ii}.N2Ncc(i,1),DataSet{ii}.N2Ncc(i,2))=DataSet{ii}.N2Ncc(i,4);
@@ -80,6 +87,7 @@ for ii=1%:size(fileListTraces,1)
         DataSet{ii}.A2Acorrmat(DataSet{ii}.A2Acc(i,1),DataSet{ii}.A2Acc(i,2))=DataSet{ii}.A2Acc(i,4);
     end
     DataSet{ii}.A2Acorrmat = DataSet{ii}.A2Acorrmat + DataSet{ii}.A2Acorrmat'+eye(size(DataSet{ii}.A2Acorrmat));
+    
     % Lag mat
     DataSet{ii}.A2Nlagmat=zeros(max(DataSet{ii}.A2Ncc(:,1)),max(DataSet{ii}.A2Ncc(:,2)));
     for i=1:length(DataSet{ii}.A2Ncc(:,1));
@@ -98,6 +106,40 @@ for ii=1%:size(fileListTraces,1)
     end
     DataSet{ii}.A2Alagmat = DataSet{ii}.A2Alagmat + DataSet{ii}.A2Alagmat'+eye(size(DataSet{ii}.A2Alagmat));
     
+    % Calculate partial correlations between astrocytes and neurons controlling for the global firing rate
+    DataSet{ii}.A2NpcGFR = partialcorr(DataSet{ii}.dfTraces,DataSet{ii}.FR,DataSet{ii}.GFR); %partial correlation with global firing rate as a control variable
+    
+    % Calculate PSTH of spike activity using Ca peaks as triggers
+    [DataSet{ii}.PairWisePSTH, DataSet{ii}.PairWiseLags]=CalcPSTHastroNeuro(DataSet{ii}.t,DataSet{ii}.ic,DataSet{ii}.dfTraces,DataSet{ii}.dfTime,DataSet{ii}.bs,DataSet{ii}.be,0); %raw
+    [DataSet{ii}.PairWisePSTHnorm,DataSet{ii}.PairWiseLagsnorm]=CalcPSTHastroNeuro(DataSet{ii}.t,DataSet{ii}.ic,DataSet{ii}.dfTraces,DataSet{ii}.dfTime,DataSet{ii}.bs,DataSet{ii}.be,2); %norm
+    
+    % Calculate PSTH of Ca activity using burst start peaks as triggers
+    [DataSet{ii}.BurstTrigTrace,DataSet{ii}.BurstTrigSmoothTrace,DataSet{ii}.BurstTrigLags,DataSet{ii}.BurstTrigSmoothLags] = CalcBurstTriggeredAstroTrace(DataSet{ii}.bs,DataSet{ii}.RawTracesDataSet{ii}.RawTime,30);
+    [DataSet{ii}.AlignedMat,DataSet{ii}.lags] = AlignTimeSeries(DataSet{ii}.BurstTrigTrace,DataSet{ii}.BurstTrigLags);
+    
+    % Regular Correlations
+    DataSet{ii}.A2Ncc = CalculateA2Ncc(DataSet{ii}.dfTraces,DataSet{ii}.t,DataSet{ii}.ic,DataSet{ii}.FR,DataSet{ii}.dfTime);
+    DataSet{ii}.N2Ncc = CalculateN2Ncc(DataSet{ii}.t,DataSet{ii}.ic);
+    DataSet{ii}.A2Acc = CalculateA2Acc(DataSet{ii}.dfTraces);
+    
+    % Store some meta data
+    DataSet{ii}.date=[];
+    DataSet{ii}.SpikesFileName=fileListTIC{sameCu};
+    DataSet{ii}.TraceFileName=fileListTraces{ii};
+    DataSet{ii}.RawTiffdir = 'E:\CalciumImagingArticleDataSet\GcAMP6 Data\Hippo Files\GFAP-GcAMP6\Tiffs';
+    DataSet{ii}.RawMCDdir = 'E:\CalciumImagingArticleDataSet\GcAMP6 Data\Mcd Files';
+    DataSet{ii}.CustomfunctionsApplied{1} = fileread('CalcDf_f.m'); % Function text for all applied functions not within the matlab library
+    DataSet{ii}.CustomfunctionsApplied{2} = fileread('CalcPartCorri.m');
+    DataSet{ii}.CustomfunctionsApplied{3} = fileread('PartialCorrWithLag3.m');
+    DataSet{ii}.CustomfunctionsApplied{4} = fileread('CalcInteractions3.m');
+    DataSet{ii}.CustomfunctionsApplied{5} = fileread('CalcPSTHastroNeuro.m');
+    DataSet{ii}.CustomfunctionsApplied{6} = fileread('mpsth.m');
+    DataSet{ii}.CustomfunctionsApplied{7} = fileread('CalcBurstTriggeredAstroTrace.m');
+    DataSet{ii}.CustomfunctionsApplied{8} = fileread('AlignTimeSeries.m');
+    DataSet{ii}.CustomfunctionsApplied{9} = fileread('UnsupervisedBurstDetection2.m');
+    DataSet{ii}.CustomfunctionsApplied{10} = fileread('CalculateA2Ncc.m');
+    DataSet{ii}.CustomfunctionsApplied{11} = fileread('CalculateN2Ncc.m');
+    DataSet{ii}.CustomfunctionsApplied{12} = fileread('CalculateA2Acc.m');
     display('Completed Loading Data...');
 end
 % clear_all_but('DataSet','homedir');

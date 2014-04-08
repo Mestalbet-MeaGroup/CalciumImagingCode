@@ -1,4 +1,4 @@
-function [newT,newIndexchannel]=removeNeuronsWithoutPrompt(t,indexchannel,varargin);
+function [newT,newIndexchannel]=RemoveNeuronsWithoutPrompt(t,indexchannel,varargin);
 %function [newT,newIndexchannel]=RemoveNeuronsWithoutPrompt(t,indexchannel,varargin);
 % a function that removes neurons  from indexchannel.
 %example:  [newT,newIndexchannel]=RemoveNeurons(t,indexchannel,[2;1],[2;3],[2;4]) -

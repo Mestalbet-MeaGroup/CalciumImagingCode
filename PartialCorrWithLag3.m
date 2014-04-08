@@ -25,7 +25,7 @@ Pval=Pcorr;
 % others{i}= mat(:,setdiff(repmat(1:n,1,numcom),[p1(i),p2(i)]));
 % end
 
-for i=1:numcom
+parfor i=1:numcom
     others = mat(:,setdiff(repmat(1:n,1,numcom),[p1(i),p2(i)]));
     v2 = lagmatrix(vec2(:,i),lags);
     v2(isnan(v2))=0;
