@@ -65,7 +65,7 @@ for ii=1%:size(fileListTraces,1)
         DataSet{ii}.dfTime]=CalcInteractions3([],DataSet{ii}.ic,[], DataSet{ii}.triggers,DataSet{ii}.RawTraces,DataSet{ii}.t); %function to calcute all the above parameters
     
     % Mean firing rate
-    DataSet{ii}.GFR          = mean(DataSet{ii}.FR,2); 
+    DataSet{ii}.GFR          = mean(DataSet{ii}.FR,2);
     
     % Burst Detect
     [DataSet{ii}.bs,DataSet{ii}.be,DataSet{ii}.bw,DataSet{ii}.sbs,DataSet{ii}.sbe,DataSet{ii}.sbw]=UnsupervisedBurstDetection2(DataSet{ii}.t,DataSet{ii}.ic); %burst detection
@@ -128,18 +128,20 @@ for ii=1%:size(fileListTraces,1)
     DataSet{ii}.TraceFileName=fileListTraces{ii};
     DataSet{ii}.RawTiffdir = 'E:\CalciumImagingArticleDataSet\GcAMP6 Data\Hippo Files\GFAP-GcAMP6\Tiffs';
     DataSet{ii}.RawMCDdir = 'E:\CalciumImagingArticleDataSet\GcAMP6 Data\Mcd Files';
-    DataSet{ii}.CustomfunctionsApplied{1} = fileread('CalcDf_f.m'); % Function text for all applied functions not within the matlab library
-    DataSet{ii}.CustomfunctionsApplied{2} = fileread('CalcPartCorri.m');
-    DataSet{ii}.CustomfunctionsApplied{3} = fileread('PartialCorrWithLag3.m');
-    DataSet{ii}.CustomfunctionsApplied{4} = fileread('CalcInteractions3.m');
-    DataSet{ii}.CustomfunctionsApplied{5} = fileread('CalcPSTHastroNeuro.m');
-    DataSet{ii}.CustomfunctionsApplied{6} = fileread('mpsth.m');
-    DataSet{ii}.CustomfunctionsApplied{7} = fileread('CalcBurstTriggeredAstroTrace.m');
-    DataSet{ii}.CustomfunctionsApplied{8} = fileread('AlignTimeSeries.m');
-    DataSet{ii}.CustomfunctionsApplied{9} = fileread('UnsupervisedBurstDetection2.m');
-    DataSet{ii}.CustomfunctionsApplied{10} = fileread('CalculateA2Ncc.m');
-    DataSet{ii}.CustomfunctionsApplied{11} = fileread('CalculateN2Ncc.m');
-    DataSet{ii}.CustomfunctionsApplied{12} = fileread('CalculateA2Acc.m');
+    if ii==1
+        DataSet{ii}.CustomfunctionsApplied{1} = fileread('CalcDf_f.m'); % Function text for all applied functions not within the matlab library
+        DataSet{ii}.CustomfunctionsApplied{2} = fileread('CalcPartCorri.m');
+        DataSet{ii}.CustomfunctionsApplied{3} = fileread('PartialCorrWithLag3.m');
+        DataSet{ii}.CustomfunctionsApplied{4} = fileread('CalcInteractions3.m');
+        DataSet{ii}.CustomfunctionsApplied{5} = fileread('CalcPSTHastroNeuro.m');
+        DataSet{ii}.CustomfunctionsApplied{6} = fileread('mpsth.m');
+        DataSet{ii}.CustomfunctionsApplied{7} = fileread('CalcBurstTriggeredAstroTrace.m');
+        DataSet{ii}.CustomfunctionsApplied{8} = fileread('AlignTimeSeries.m');
+        DataSet{ii}.CustomfunctionsApplied{9} = fileread('UnsupervisedBurstDetection2.m');
+        DataSet{ii}.CustomfunctionsApplied{10} = fileread('CalculateA2Ncc.m');
+        DataSet{ii}.CustomfunctionsApplied{11} = fileread('CalculateN2Ncc.m');
+        DataSet{ii}.CustomfunctionsApplied{12} = fileread('CalculateA2Acc.m');
+    end
     display('Completed Loading Data...');
 end
 % clear_all_but('DataSet','homedir');

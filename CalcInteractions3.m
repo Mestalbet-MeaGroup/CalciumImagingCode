@@ -47,6 +47,7 @@ neuros = combs(:,1);
 astros = combs(:,2);
 lag = 1000;
 lags = -1000:1000;
+
 [rho,pval] = CalcPartCorri(traces,fr,lag);
 rho(find(pval<0.05))=nan; 
 [corrs,idx]= nanmax(rho,[],3);

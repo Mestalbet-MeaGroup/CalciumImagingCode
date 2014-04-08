@@ -1,6 +1,6 @@
 function [rho,pval] = CalcPartCorri(dfTraces,fr,lag)
 
-rho=zeros(size(dfTraces,2),size(fr,2),lag-1);
+rho=zeros(size(dfTraces,2),size(fr,2),lag*2-1);
 pval=rho;
 parfor i=-(lag-1):(lag-1)
 v2 = lagmatrix(dfTraces,i);
