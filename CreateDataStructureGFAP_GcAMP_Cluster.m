@@ -9,7 +9,7 @@ fileListTraces = getAllFiles([homedir,'Trace Mat Files/']); % select directory w
 if size(fileListTraces,1)~=size(fileListTIC,1)
     error('Different number of trace files and electrode files');
 end
-
+DataSet = cell(size(fileListTraces,1),1);
 for ii=1%:size(fileListTraces,1)
     
     flags = isstrdigit(fileListTraces{ii});
