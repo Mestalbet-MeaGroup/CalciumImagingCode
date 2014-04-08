@@ -46,7 +46,7 @@ combs = allcomb(1:size(fr,2),1:size(traces,2));
 neuros = combs(:,1);
 astros = combs(:,2);
 lag = 1000;
-lags = -1000:1000;
+lags = -(lag-1):(lag-1);
 
 [rho,pval] = CalcPartCorri(traces,fr,lag);
 rho(find(pval<0.05))=nan; 
