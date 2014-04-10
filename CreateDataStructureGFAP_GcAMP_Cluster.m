@@ -7,7 +7,7 @@ fileListTraces = getAllFiles([homedir,'Trace Mat Files/']); % select directory w
 % ROIcenters: Coordinates for ROI centroids
 % Intensitymat: NroixFrames, raw trace values (average pixel intensity per frame per ROI)
 % mask: 2D binary matrix where ones indicate ROIs. Each ROIcenter corresponds to an ROI in the mask and to the Nroi dimension of intensitymat
-% region: Hippo output. Software used to select ROIs. 
+% region: Hippo output. Software used to select ROIs.
 
 if size(fileListTraces,1)~=size(fileListTIC,1)
     error('Different number of trace files and electrode files');
@@ -110,7 +110,43 @@ for ii=1:size(fileListTraces,1)
     DataSet{ii}.A2Alagmat = DataSet{ii}.A2Alagmat + DataSet{ii}.A2Alagmat'+eye(size(DataSet{ii}.A2Alagmat));
     
     % Calculate partial correlations between astrocytes and neurons controlling for the global firing rate
-    DataSet{ii}.A2NpcGFR = partialcorr(DataSet{ii}.dfTraces,DataSet{ii}.FR,DataSet{ii}.GFR); %partial correlation with global firing rate as a control variable
+    
+    lags=-2000:100;
+    combs = allcomb(1:size(DataSet{ii}.FR,2),1:size(DataSet{ii}.dfTraces,2));
+    vec1=DataSet{ii}.FR(:,combs(:,1));
+    vec2=DataSet{ii}.dfTraces(:,combs(:,2));
+    numcom=size(combs,1);
+    GFR = DataSet{ii}.GFR;
+    
+    keyMAT1 = '00001';
+    obMAT1 = shmobject(keyMAT1,vec1);
+    clear vec1;
+    keyMAT2 = '00002';
+    obMAT2 = shmobject(keyMAT2,vec2);
+    clear vec2;
+    
+    parfor i=1:numcom
+        Rvec1 = shmref(keyMAT1);
+        Rvec2 = shmref(keyMAT2);
+        v2 = lagmatrix(Rvec2.data(:,i),lags);
+        %         v2(isnan(v2))=0;
+        [Pcorr(i,:),Pval(i,:)] = CalcPCwithLag(Rvec1.data(:,i),v2, GFR);
+        delete(Rvec1);
+        delete(Rvec2);
+    end
+    
+    clear(obMAT1);
+    clear(obMAT2);
+        
+    Pcorr(Pval<0.05)=nan;
+    [ParCor,ind]=nanmax(Pcorr,[],2);
+    lags=lags(ind);
+    DataSet{ii}.A2NpcGFR=zeros(max(combs(:,1)),max(combs(:,2)));
+    DataSet{ii}.A2NpcGFRlags=zeros(max(combs(:,1)),max(combs(:,2)));
+    for i=1:numcom;
+        DataSet{ii}.A2NpcGFR(combs(i,1),combs(i,2))=ParCor(i);
+        DataSet{ii}.A2NpcGFRlags(combs(i,1),combs(i,2))=lags(i);
+    end
     
     % Calculate PSTH of spike activity using Ca peaks as triggers
     [DataSet{ii}.PairWisePSTH, DataSet{ii}.PairWiseLags]=CalcPSTHastroNeuro(DataSet{ii}.t,DataSet{ii}.ic,DataSet{ii}.dfTraces,DataSet{ii}.dfTime,DataSet{ii}.bs,DataSet{ii}.be,0); %raw
@@ -134,7 +170,7 @@ for ii=1:size(fileListTraces,1)
     
     % Function text for all applied functions not within the matlab library
     if ii==1
-        DataSet{ii}.CustomfunctionsApplied{1} = fileread('CalcDf_f.m'); 
+        DataSet{ii}.CustomfunctionsApplied{1} = fileread('CalcDf_f.m');
         DataSet{ii}.CustomfunctionsApplied{2} = fileread('CalcPartCorri.m');
         DataSet{ii}.CustomfunctionsApplied{3} = fileread('PartialCorrWithLag3.m');
         DataSet{ii}.CustomfunctionsApplied{4} = fileread('CalcInteractions3.m');
