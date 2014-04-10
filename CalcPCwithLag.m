@@ -11,7 +11,8 @@ pv=pc;
 z1 = [ones(n,1) others];
 
 for ii=1:v2s
-%     [pc(ii),pv(ii)]=partialcorr(v1,v2(:,ii),others);
+%     [pc(ii),pv(ii)]=partialcorr(v1,v2(:,ii),others); % This gives the
+%     same results as the following calculations (but slower)
 xx = [v1,v2(:,ii)];
 resid = xx - z1*(z1 \ xx);
 tol = max(n,d)*eps(class(xx))*sqrt(sum(abs(xx).^2,1));

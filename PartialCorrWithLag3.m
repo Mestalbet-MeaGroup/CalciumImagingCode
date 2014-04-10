@@ -25,19 +25,20 @@ Pval=Pcorr;
 % others{i}= mat(:,setdiff(repmat(1:n,1,numcom),[p1(i),p2(i)]));
 % end
 
-% keyMAT = '00001';
-% obMAT = shmobject(keyMAT,mat);
+keyMAT = '00001';
+obMAT = shmobject(keyMAT,mat);
 % clear mat;
 
 parfor i=1:numcom
-%     rMAT = shmref(keyMAT);
-%     others = rMAT.data(:,setdiff(repmat(1:n,1,numcom),[p1(i),p2(i)]));
-    others = mat(:,setdiff(repmat(1:n,1,numcom),[p1(i),p2(i)]));
+    rMAT = shmref(keyMAT);
+    others = rMAT.data(:,setdiff(repmat(1:n,1,numcom),[p1(i),p2(i)]));
+%     others = mat(:,setdiff(repmat(1:n,1,numcom),[p1(i),p2(i)]));
     v2 = lagmatrix(vec2(:,i),lags);
     v2(isnan(v2))=0;
     [Pcorr(i,:),Pval(i,:)] = CalcPCwithLag(vec1(:,i),v2,others);
 %     delete(rMAT);
 end
+
 %Comment out if you uncomment below.
 Pcorr(Pval<0.05)=nan;
 [ParCor,ind]=nanmax(Pcorr,[],2); 
