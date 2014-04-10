@@ -28,34 +28,23 @@ end
 if size(traces,2)>size(traces,1)
     traces=traces';
 end
-% lags = zeros(size(combs,1),1);
-% corrs = zeros(size(combs,1),1);
-% temp = fr(:,combs(:,1));
-% frs=mat2cell(temp',ones(size(temp,2),1));
-% clear temp;
-% temp = traces(:,combs(:,2));
-% trc=mat2cell(temp',ones(size(temp,2),1));
-% clear temp;
 
-% parfor i=1:size(combs,1)
-%     [lags(i),corrs(i)]=CalcCorr(trc{i},frs{i});
-% end
-
-%test here:
 combs = allcomb(1:size(fr,2),1:size(traces,2));
 neuros = combs(:,1);
 astros = combs(:,2);
-lag = 10;
+lag = 1000;
 lags = -(lag-1):(lag-1);
 
 [rho,pval] = CalcPartCorri(traces,fr,lag);
 rho(find(pval<0.05))=nan; 
 [corrs,idx]= nanmax(rho,[],3);
-corrs=corrs';
 lags = lags(idx);
+corrs=corrs';
+lags=lags';
 linearInd = sub2ind([size(corrs,1),size(corrs,2)], neuros,astros);
-
-A2N = [neuros,astros,lags(linearInd),corrs(linearInd)];
+corrs = corrs(linearInd);
+lags=lags(linearInd);
+A2N = [neuros,astros,lags,corrs];
 %% Select optimum subset
 % lags   = lags(corrs > nanmean(corrs)+sqrt(nanvar(corrs)));
 % neuros = neuros(corrs > nanmean(corrs)+sqrt(nanvar(corrs)));
@@ -64,6 +53,7 @@ A2N = [neuros,astros,lags(linearInd),corrs(linearInd)];
 % corrs = (corrs-min(corrs))./(max(corrs)-min(corrs));
 
 %% Calculate Electrode to Electrode lags for subset
+
 [Ecorrs,~,Elags,e1,e2] = PartialCorrWithLag3(fr,10);
 e1 = double(e1);
 e2 = double(e2);
