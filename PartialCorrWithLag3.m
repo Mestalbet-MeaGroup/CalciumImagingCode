@@ -34,7 +34,7 @@ parfor i=1:numcom
     others = rMAT.data(:,setdiff(repmat(1:n,1,numcom),[p1(i),p2(i)]));
 %     others = mat(:,setdiff(repmat(1:n,1,numcom),[p1(i),p2(i)]));
     v2 = lagmatrix(vec2(:,i),lags);
-    v2(isnan(v2))=0;
+%     v2(isnan(v2))=0;
     [Pcorr(i,:),Pval(i,:)] = CalcPCwithLag(vec1(:,i),v2,others);
 %     delete(rMAT);
 end

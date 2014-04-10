@@ -129,7 +129,6 @@ for ii=1:size(fileListTraces,1)
         Rvec1 = shmref(keyMAT1);
         Rvec2 = shmref(keyMAT2);
         v2 = lagmatrix(Rvec2.data(:,i),lags);
-        %         v2(isnan(v2))=0;
         [Pcorr(i,:),Pval(i,:)] = CalcPCwithLag(Rvec1.data(:,i),v2, GFR);
         delete(Rvec1);
         delete(Rvec2);
