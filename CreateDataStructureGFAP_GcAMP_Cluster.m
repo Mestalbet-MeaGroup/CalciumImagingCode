@@ -55,7 +55,7 @@ for ii=1:size(fileListTraces,1)
     DataSet{ii}.t            = t; % Spike times arranged by channel
     DataSet{ii}.ic           = ic; % Index in t of channel start times
     DataSet{ii}.RawTraces    = intensitymat; %raw calcium traces through hippo generated mask
-    DataSet{ii}.triggers     = triggers; %LED triggers to MCD file
+    DataSet{ii}.triggers     = triggers; %CCD triggers to MCD file
     DataSet{ii}.RawTime      = linspace(triggers(1),triggers(end),size(intensitymat,2)); %Time when each image frame was taken
     DataSet{ii}.fs           = 1/mean(diff(DataSet{ii}.RawTime)); %Sampling rate
     [DataSet{ii}.Schematic,... %adjacency matrix of connects based on lags for max corr
@@ -131,8 +131,10 @@ for ii=1:size(fileListTraces,1)
     DataSet{ii}.TraceFileName=fileListTraces{ii};
     DataSet{ii}.RawTiffdir = 'E:\CalciumImagingArticleDataSet\GcAMP6 Data\Hippo Files\GFAP-GcAMP6\Tiffs';
     DataSet{ii}.RawMCDdir = 'E:\CalciumImagingArticleDataSet\GcAMP6 Data\Mcd Files';
+    
+    % Function text for all applied functions not within the matlab library
     if ii==1
-        DataSet{ii}.CustomfunctionsApplied{1} = fileread('CalcDf_f.m'); % Function text for all applied functions not within the matlab library
+        DataSet{ii}.CustomfunctionsApplied{1} = fileread('CalcDf_f.m'); 
         DataSet{ii}.CustomfunctionsApplied{2} = fileread('CalcPartCorri.m');
         DataSet{ii}.CustomfunctionsApplied{3} = fileread('PartialCorrWithLag3.m');
         DataSet{ii}.CustomfunctionsApplied{4} = fileread('CalcInteractions3.m');
