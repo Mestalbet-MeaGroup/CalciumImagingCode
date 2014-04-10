@@ -122,7 +122,7 @@ for ii=1:size(fileListTraces,1)
     
     % Regular Correlations
     DataSet{ii}.A2Ncc = CalculateA2Ncc(DataSet{ii}.dfTraces,DataSet{ii}.t,DataSet{ii}.ic,DataSet{ii}.FR,DataSet{ii}.dfTime);
-    DataSet{ii}.N2Ncc = CalculateN2Ncc(DataSet{ii}.t,DataSet{ii}.ic);
+    DataSet{ii}.N2Ncc = CalculateN2Ncc(DataSet{ii}.t,DataSet{ii}.ic); %Correlation of firing rates
     DataSet{ii}.A2Acc = CalculateA2Acc(DataSet{ii}.dfTraces);
     
     % Store some meta data

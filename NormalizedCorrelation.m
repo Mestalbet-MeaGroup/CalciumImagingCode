@@ -5,7 +5,7 @@ function Corr=NormalizedCorrelation(a,b)
 % b =  used for neuron firing rate (in astro2neuro correlation calculation)
 % Written by: Noah Levine-Small
 % Revision 1: 3/03/2013
-lag = 300;
+lag = 2000;
 a=(a-mean(a))/var(a);
 b=(b-mean(b))/var(b);
 len = length(a); % also equal to length(b)

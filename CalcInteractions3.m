@@ -45,14 +45,15 @@ end
 combs = allcomb(1:size(fr,2),1:size(traces,2));
 neuros = combs(:,1);
 astros = combs(:,2);
-lag = 1000;
+lag = 10;
 lags = -(lag-1):(lag-1);
 
 [rho,pval] = CalcPartCorri(traces,fr,lag);
 rho(find(pval<0.05))=nan; 
 [corrs,idx]= nanmax(rho,[],3);
+corrs=corrs';
 lags = lags(idx);
-linearInd = sub2ind([size(rho,1),size(rho,2)], neuros, astros);
+linearInd = sub2ind([size(corrs,1),size(corrs,2)], neuros,astros);
 
 A2N = [neuros,astros,lags(linearInd),corrs(linearInd)];
 %% Select optimum subset
