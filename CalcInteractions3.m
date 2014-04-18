@@ -35,7 +35,7 @@ astros = combs(:,2);
 lag = 1000;
 lags = -(lag-1):(lag-1);
 
-[rho,pval] = CalcPartCorri(traces,fr,lag);toc
+[rho,pval] = CalcPartCorri(traces,fr,lag);
 rho(find(pval<0.05))=nan; 
 [corrs,idx]= nanmax(rho,[],3);
 lags = lags(idx);
