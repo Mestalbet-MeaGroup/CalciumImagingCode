@@ -196,7 +196,7 @@ for ii=1:size(fileListTraces,1)
         props.setProperty('mail.smtp.socketFactory.class', 'javax.net.ssl.SSLSocketFactory');
         props.setProperty('mail.smtp.socketFactory.port','465');
         % Send the email.  Note that the first input is the address you are sending the email to
-        sendmail({'mestalbet@gmail.com'},'Test from MATLAB',err.identifier);
+        sendmail({'mestalbet@gmail.com'},'MATLAB Error',err.identifier);
         continue;
     end
 end
