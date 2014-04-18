@@ -13,7 +13,7 @@ if size(fileListTraces,1)~=size(fileListTIC,1)
     error('Different number of trace files and electrode files');
 end
 DataSet = cell(size(fileListTraces,1),1);
-
+save([homedir,'DataSet_GFAP_GcAMP6_withSchematic_withMask_withLags_latest.mat'],'DataSet');
 for ii=1:size(fileListTraces,1)
     try
         flags = isstrdigit(fileListTraces{ii});
@@ -75,40 +75,40 @@ for ii=1:size(fileListTraces,1)
         [DataSet{ii}.bs,DataSet{ii}.be,DataSet{ii}.bw,DataSet{ii}.sbs,DataSet{ii}.sbe,DataSet{ii}.sbw]=UnsupervisedBurstDetection2(DataSet{ii}.t,DataSet{ii}.ic); %burst detection
         
         % CorrMats
-        DataSet{ii}.A2Ncorrmat=zeros(max(DataSet{ii}.A2Ncc(:,1)),max(DataSet{ii}.A2Ncc(:,2)));
-        for i=1:length(DataSet{ii}.A2Ncc(:,1));
-            DataSet{ii}.A2Ncorrmat(DataSet{ii}.A2Ncc(i,1),DataSet{ii}.A2Ncc(i,2))=DataSet{ii}.A2Ncc(i,4);
+        DataSet{ii}.A2Npcorrmat=zeros(max(DataSet{ii}.A2Npc(:,1)),max(DataSet{ii}.A2Npc(:,2)));
+        for i=1:length(DataSet{ii}.A2Npc(:,1));
+            DataSet{ii}.A2Npcorrmat(DataSet{ii}.A2Npc(i,1),DataSet{ii}.A2Npc(i,2))=DataSet{ii}.A2Npc(i,4);
         end
         
-        DataSet{ii}.N2Ncorrmat=zeros(max(DataSet{ii}.N2Ncc(:,1)+1),max(DataSet{ii}.N2Ncc(:,2)));
-        for i=1:length(DataSet{ii}.N2Ncc(:,1));
-            DataSet{ii}.N2Ncorrmat(DataSet{ii}.N2Ncc(i,1),DataSet{ii}.N2Ncc(i,2))=DataSet{ii}.N2Ncc(i,4);
+        DataSet{ii}.N2Npcorrmat=zeros(max(DataSet{ii}.N2Npc(:,1)+1),max(DataSet{ii}.N2Npc(:,2)));
+        for i=1:length(DataSet{ii}.N2Npc(:,1));
+            DataSet{ii}.N2Npcorrmat(DataSet{ii}.N2Npc(i,1),DataSet{ii}.N2Npc(i,2))=DataSet{ii}.N2Npc(i,4);
         end
-        DataSet{ii}.N2Ncorrmat = DataSet{ii}.N2Ncorrmat + DataSet{ii}.N2Ncorrmat'+eye(size(DataSet{ii}.N2Ncorrmat));
+        DataSet{ii}.N2Npcorrmat = DataSet{ii}.N2Npcorrmat + DataSet{ii}.N2Npcorrmat'+eye(size(DataSet{ii}.N2Npcorrmat));
         
-        DataSet{ii}.A2Acorrmat=zeros(max(DataSet{ii}.A2Acc(:,1)+1),max(DataSet{ii}.A2Acc(:,2)));
-        for i=1:length(DataSet{ii}.A2Acc(:,1));
-            DataSet{ii}.A2Acorrmat(DataSet{ii}.A2Acc(i,1),DataSet{ii}.A2Acc(i,2))=DataSet{ii}.A2Acc(i,4);
+        DataSet{ii}.A2Apcorrmat=zeros(max(DataSet{ii}.A2Apc(:,1)+1),max(DataSet{ii}.A2Apc(:,2)));
+        for i=1:length(DataSet{ii}.A2Apc(:,1));
+            DataSet{ii}.A2Apcorrmat(DataSet{ii}.A2Apc(i,1),DataSet{ii}.A2Apc(i,2))=DataSet{ii}.A2Apc(i,4);
         end
-        DataSet{ii}.A2Acorrmat = DataSet{ii}.A2Acorrmat + DataSet{ii}.A2Acorrmat'+eye(size(DataSet{ii}.A2Acorrmat));
+        DataSet{ii}.A2Apcorrmat = DataSet{ii}.A2Apcorrmat + DataSet{ii}.A2Apcorrmat'+eye(size(DataSet{ii}.A2Apcorrmat));
         
         % Lag mat
-        DataSet{ii}.A2Nlagmat=zeros(max(DataSet{ii}.A2Ncc(:,1)),max(DataSet{ii}.A2Ncc(:,2)));
-        for i=1:length(DataSet{ii}.A2Ncc(:,1));
-            DataSet{ii}.A2Nlagmat(DataSet{ii}.A2Ncc(i,1),DataSet{ii}.A2Ncc(i,2))=DataSet{ii}.A2Ncc(i,3);
+        DataSet{ii}.A2Nplagmat=zeros(max(DataSet{ii}.A2Npc(:,1)),max(DataSet{ii}.A2Npc(:,2)));
+        for i=1:length(DataSet{ii}.A2Npc(:,1));
+            DataSet{ii}.A2Nplagmat(DataSet{ii}.A2Npc(i,1),DataSet{ii}.A2Npc(i,2))=DataSet{ii}.A2Npc(i,3);
         end
         
-        DataSet{ii}.N2Nlagmat=zeros(max(DataSet{ii}.N2Ncc(:,1)+1),max(DataSet{ii}.N2Ncc(:,2)));
-        for i=1:length(DataSet{ii}.N2Ncc(:,1));
-            DataSet{ii}.N2Nlagmat(DataSet{ii}.N2Ncc(i,1),DataSet{ii}.N2Ncc(i,2))=DataSet{ii}.N2Ncc(i,3);
+        DataSet{ii}.N2Nplagmat=zeros(max(DataSet{ii}.N2Npc(:,1)+1),max(DataSet{ii}.N2Npc(:,2)));
+        for i=1:length(DataSet{ii}.N2Npc(:,1));
+            DataSet{ii}.N2Nplagmat(DataSet{ii}.N2Npc(i,1),DataSet{ii}.N2Npc(i,2))=DataSet{ii}.N2Npc(i,3);
         end
-        DataSet{ii}.N2Nlagmat = DataSet{ii}.N2Nlagmat + DataSet{ii}.N2Nlagmat'+eye(size(DataSet{ii}.N2Nlagmat));
+        DataSet{ii}.N2Nplagmat = DataSet{ii}.N2Nplagmat + DataSet{ii}.N2Nplagmat'+eye(size(DataSet{ii}.N2Nplagmat));
         
-        DataSet{ii}.A2Alagmat=zeros(max(DataSet{ii}.A2Acc(:,1)+1),max(DataSet{ii}.A2Acc(:,2)));
-        for i=1:length(DataSet{ii}.A2Acc(:,1));
-            DataSet{ii}.A2Alagmat(DataSet{ii}.A2Acc(i,1),DataSet{ii}.A2Acc(i,2))=DataSet{ii}.A2Acc(i,3);
+        DataSet{ii}.A2Aplagmat=zeros(max(DataSet{ii}.A2Apc(:,1)+1),max(DataSet{ii}.A2Apc(:,2)));
+        for i=1:length(DataSet{ii}.A2Apc(:,1));
+            DataSet{ii}.A2Aplagmat(DataSet{ii}.A2Apc(i,1),DataSet{ii}.A2Apc(i,2))=DataSet{ii}.A2Apc(i,3);
         end
-        DataSet{ii}.A2Alagmat = DataSet{ii}.A2Alagmat + DataSet{ii}.A2Alagmat'+eye(size(DataSet{ii}.A2Alagmat));
+        DataSet{ii}.A2Aplagmat = DataSet{ii}.A2Aplagmat + DataSet{ii}.A2Aplagmat'+eye(size(DataSet{ii}.A2Aplagmat));
         
         % Calculate partial correlations between astrocytes and neurons controlling for the global firing rate
         
@@ -162,7 +162,7 @@ for ii=1:size(fileListTraces,1)
         DataSet{ii}.A2Acc = CalculateA2Acc(DataSet{ii}.dfTraces);
         
         % Store some meta data
-        DataSet{ii}.date=[];
+        DataSet{ii}.ExpDate=[];
         DataSet{ii}.SpikesFileName=fileListTIC{sameCu};
         DataSet{ii}.TraceFileName=fileListTraces{ii};
         DataSet{ii}.RawTiffdir = 'E:\CalciumImagingArticleDataSet\GcAMP6 Data\Hippo Files\GFAP-GcAMP6\Tiffs';
@@ -196,8 +196,9 @@ for ii=1:size(fileListTraces,1)
         props.setProperty('mail.smtp.socketFactory.class', 'javax.net.ssl.SSLSocketFactory');
         props.setProperty('mail.smtp.socketFactory.port','465');
         % Send the email.  Note that the first input is the address you are sending the email to
-        sendmail({'mestalbet@gmail.com'},'MATLAB Error',err.identifier);
+        sendmail({'mestalbet@gmail.com'},'MATLAB Error',[err.identifier ' ' err.message]);
+        save([homedir,'DataSet_GFAP_GcAMP6_withSchematic_withMask_withLags_ParCor.mat'],'DataSet','-append');
         continue;
     end
+    save([homedir,'DataSet_GFAP_GcAMP6_withSchematic_withMask_withLags_ParCor.mat'],'DataSet','-append');
 end
-save([homedir,'DataSet_GFAP_GcAMP6_withSchematic_withMask_withLags_ParCor.mat'],'DataSet');
