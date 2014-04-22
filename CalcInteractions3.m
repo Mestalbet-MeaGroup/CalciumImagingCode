@@ -88,7 +88,7 @@ CorrSummary(3,:)=[corrs;Ecorrs;Acorrs]';
 CorrSummary(4,:)=[lags;Elags;Alags];
 
 %% Restrict to Only Top Scores
-CorrSummary = CorrSummary(:,CorrSummary(3,:)>nanmean(CorrSummary(3,:))+sqrt(nanvar(CorrSummary(3,:))));
+% CorrSummary = CorrSummary(:,CorrSummary(3,:)>nanmean(CorrSummary(3,:))+sqrt(nanvar(CorrSummary(3,:))));
 %% Create Node Names
 
 list = unique([CorrSummary(1,:),CorrSummary(2,:)]);
