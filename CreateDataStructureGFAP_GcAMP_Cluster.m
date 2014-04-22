@@ -185,6 +185,7 @@ for ii=1:size(fileListTraces,1)
         end
         display('Completed Loading Data...');
     catch err
+        save([homedir,'DataSet_GFAP_GcAMP6_withSchematic_withMask_withLags_ParCor.mat'],'DataSet','-append');
         mail = 'noahmatlab@gmail.com'; %Your GMail email address
         password = '821405il';  %Your GMail password
         setpref('Internet','SMTP_Server','smtp.gmail.com');
@@ -196,8 +197,7 @@ for ii=1:size(fileListTraces,1)
         props.setProperty('mail.smtp.socketFactory.class', 'javax.net.ssl.SSLSocketFactory');
         props.setProperty('mail.smtp.socketFactory.port','465');
         % Send the email.  Note that the first input is the address you are sending the email to
-        sendmail({'mestalbet@gmail.com'},'MATLAB Error',[err.identifier ' ' err.message]);
-        save([homedir,'DataSet_GFAP_GcAMP6_withSchematic_withMask_withLags_ParCor.mat'],'DataSet','-append');
+        sendmail({'mestalbet@gmail.com'},'MATLAB Error',[err.identifier ' ' err.message],{[homedir,'DataSet_GFAP_GcAMP6_withSchematic_withMask_withLags_latest.mat']});      
         continue;
     end
     save([homedir,'DataSet_GFAP_GcAMP6_withSchematic_withMask_withLags_ParCor.mat'],'DataSet','-append');
