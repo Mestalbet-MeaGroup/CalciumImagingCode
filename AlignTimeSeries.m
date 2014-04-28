@@ -1,4 +1,4 @@
-function [AlignedMat2,lags,lagmat] = AlignTimeSeries(traces,lags,fs);
+function [AlignedMat,lags,lagmat] = AlignTimeSeries(traces,lags,fs);
 % Align two time series. Designed especially for calcium traces. 
 AlignedMat=[];
 % fs= 14.235; %sampling rate;
@@ -17,32 +17,32 @@ for i=1:size(traces,1)
     end
 end
 [~,idx]=max(mean(squeeze(AlignedMat(1,:,:)),2));
-vec = idx-50:idx+60;
+vec = idx-60*4:idx+80*4;
 lags=lags(vec);
 AlignedMat=AlignedMat(:,vec,:);
-
+lagmat=lagmat(:,vec,:);
 
 %% Cluster each channel
-[colors,clustI]=ClusterTraces(AlignedMat);
+% [colors,clustI]=ClusterTraces(AlignedMat);
 
 %% Align within clusters seperately
-AlignedMat2=zeros(size(AlignedMat));
-for i=1:size(AlignedMat,1)
-    for k = 1:max(clustI{i})
-        indices = find(clustI{i}==k);
-        tempk = squeeze(AlignedMat(i,:,indices));
-        if size(tempk,2)==size(AlignedMat,2) %This is because of squeeze which returns a row vector if there is one trace and column if there is more than one trace
-            tempk=tempk';
-        end
-        [~,num]=max(max(tempk,[],1));
-        if ~isempty(tempk)
-            for j=1:numel(indices)
-                [lag,~]=CalcCorrRaw(zscore(tempk(:,j)),zscore(tempk(:,num)),30);
-                AlignedMat2(i,:,indices(j))=lagmatrix(tempk(:,j),-1*(lag));
-            end
-        end
-    end
-end
+% AlignedMat2=zeros(size(AlignedMat));
+% for i=1:size(AlignedMat,1)
+%     for k = 1:max(clustI{i})
+%         indices = find(clustI{i}==k);
+%         tempk = squeeze(AlignedMat(i,:,indices));
+%         if size(tempk,2)==size(AlignedMat,2) %This is because of squeeze which returns a row vector if there is one trace and column if there is more than one trace
+%             tempk=tempk';
+%         end
+%         [~,num]=max(max(tempk,[],1));
+%         if ~isempty(tempk)
+%             for j=1:numel(indices)
+%                 [lag,~]=CalcCorrRaw(zscore(tempk(:,j)),zscore(tempk(:,num)),30);
+%                 AlignedMat2(i,:,indices(j))=lagmatrix(tempk(:,j),-1*(lag));
+%             end
+%         end
+%     end
+% end
 
 %% Plot Aligned Traces for 1 channel
 % figure;
@@ -56,26 +56,26 @@ end
 % xlabel('Time [Sec]');
 
 %% Calculate Alignment of mean traces across channels
-AllSet=[];
-for i=1:143
-    for clust=1:9
-        temp = squeeze(AlignedMat2(i,:,clustI{i}==clust));
-        if size(temp,2)==size(AlignedMat2,2) %This is because of squeeze which returns a row vector if there is one trace and column if there is more than one trace
-            temp=temp';
-        end
-        k=size(temp,2);
-        while (k<=size(temp,2))&&(k>0)
-            if (nanmax(temp(:,k))<=1.1*nanmean(temp(:,k)))
-                temp(:,k)=[];
-            end
-            k=k-1;
-        end
-        if ~isempty(temp)
-            AllSet = [AllSet,temp];
-        end
-    end
-end
-AlignedTrace = AlignTraces(AllSet);
+% AllSet=[];
+% for i=1:143
+%     for clust=1:9
+%         temp = squeeze(AlignedMat2(i,:,clustI{i}==clust));
+%         if size(temp,2)==size(AlignedMat2,2) %This is because of squeeze which returns a row vector if there is one trace and column if there is more than one trace
+%             temp=temp';
+%         end
+%         k=size(temp,2);
+%         while (k<=size(temp,2))&&(k>0)
+%             if (nanmax(temp(:,k))<=1.1*nanmean(temp(:,k)))
+%                 temp(:,k)=[];
+%             end
+%             k=k-1;
+%         end
+%         if ~isempty(temp)
+%             AllSet = [AllSet,temp];
+%         end
+%     end
+% end
+% AlignedTrace = AlignTraces(AllSet);
 
 %% Plot Mean Reconstructed Traces from one channel
 % figure;

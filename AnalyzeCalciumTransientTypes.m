@@ -41,8 +41,8 @@ for j=1:N
 end
 data(isnan(data))=nanmedian(data(:));
 data(data==0)=nanmedian(data(:));
-data=zscore(data');
-data=data';
+data2=zscore(data');
+data2=data2';
 
 % Create a Self-Organizing Map
 dimension1 = 10;
@@ -50,9 +50,9 @@ dimension2 = 10;
 net = selforgmap([dimension1 dimension2]);
 net.trainParam.showWindow = false;
 % Train the Network
-[net,tr] = train(net,data);
+[net,tr] = train(net,data2);
 % Test the Network
-outputs = net(data);
+outputs = net(data2);
 
 [clustId,~]=find(outputs);
 temp = unique(clustId);
@@ -87,9 +87,29 @@ for i=1:max(clustId)
     hold on;
     for j=1:numel(vec)
         plot(lagdata(:,vec(j)), data(:,vec(j)),'color',ElecColor(elecs(vec(j)),:));
+%           plot(lags, data(:,vec(j)),'color',ElecColor(elecs(vec(j)),:));
     end
     hold off;
     title(['Cluster ', num2str(i)],'color',colors(i,:));
-    export_fig ['Cluster ', num2str(i) '.png'] -native
+    maximize(gcf);
+    strng= ['C:\Users\Noah\Documents\GitHub\CaTracePics\Cluster_', num2str(i) '.png'];
+    export_fig(strng,'-native');
+    close all;
+end
+
+
+for i=1:size(AlignedMat,2)
+    hold all
+    for j=1:size(AlignedMat,3)
+        temp = squeeze(AlignedMat(:,i,j));
+        if nanmax(temp)>nanmean(temp)*1.05
+            plot(temp);
+        end
+    end
+    title(['ROI ', num2str(i)]);
+    axis tight;
+    maximize(gcf);
+    strng= ['C:\Users\Noah\Documents\GitHub\CaTracePics\ByROI\ROI_', num2str(i) '.png'];
+    export_fig(strng,'-native');
     close all;
 end
