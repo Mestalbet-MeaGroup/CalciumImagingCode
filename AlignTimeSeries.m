@@ -1,7 +1,7 @@
-function AlignedMat2 = AlignTimeSeries(traces,lags);
+function [AlignedMat2,lags,lagmat] = AlignTimeSeries(traces,lags,fs);
 % Align two time series. Designed especially for calcium traces. 
 AlignedMat=[];
-fs= 14.235; %sampling rate;
+% fs= 14.235; %sampling rate;
 %% Align by corr
 [~,idx]= max(squeeze(traces(1,:,:)),[],1);
 idx=floor(mean(idx));
@@ -13,6 +13,7 @@ for i=1:size(traces,1)
     for j=6:size(traces,3)
         [lag,~]=CalcCorrRaw(zscore(squeeze(traces(i,:,j))),zscore(squeeze(traces(i,:,num))),30);
         AlignedMat(i,:,j)=lagmatrix(squeeze(traces(i,:,j)),-1*(lag));
+        lagmat(i,:,j)=lagmatrix(lags,-1*(lag));
     end
 end
 [~,idx]=max(mean(squeeze(AlignedMat(1,:,:)),2));

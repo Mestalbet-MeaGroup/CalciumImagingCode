@@ -165,7 +165,7 @@ for ii=1:size(fileListTraces,1)
         
         % Calculate PSTH of Ca activity using burst start peaks as triggers
         [DataSet{ii}.BurstTrigTrace,DataSet{ii}.BurstTrigSmoothTrace,DataSet{ii}.BurstTrigLags,DataSet{ii}.BurstTrigSmoothLags] = CalcBurstTriggeredAstroTrace(DataSet{ii}.bs,DataSet{ii}.RawTracesDataSet{ii}.RawTime,30);
-        [DataSet{ii}.AlignedMat,DataSet{ii}.lags] = AlignTimeSeries(DataSet{ii}.BurstTrigTrace,DataSet{ii}.BurstTrigLags);
+        [DataSet{ii}.AlignedMat,DataSet{ii}.lags,DataSet{ii}.lagMat] = AlignTimeSeries(DataSet{ii}.BurstTrigTrace,DataSet{ii}.BurstTrigLags,DataSet{ii}.fs);
         
         % Regular Correlations
         DataSet{ii}.A2Ncc = CalculateA2Ncc(DataSet{ii}.dfTraces,DataSet{ii}.t,DataSet{ii}.ic,DataSet{ii}.FR,DataSet{ii}.dfTime);
