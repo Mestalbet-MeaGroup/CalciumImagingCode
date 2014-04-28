@@ -118,32 +118,36 @@ for ii=1:size(fileListTraces,1)
         vec2=DataSet{ii}.dfTraces(:,combs(:,2));
         numcom=size(combs,1);
         GFR = DataSet{ii}.GFR;
-        
-        keyMAT1 = '00001';
-        obMAT1 = shmobject(keyMAT1,vec1);
-        clear vec1;
-        keyMAT2 = '00002';
-        obMAT2 = shmobject(keyMAT2,vec2);
-        clear vec2;
-        
-        Rvec1 = shmref(keyMAT1);
-        Rvec2 = shmref(keyMAT2);
-        
         parfor i=1:numcom
-            
-            v2 = lagmatrix(Rvec2.data(:,i),lags);
-            [Pcorr(i,:),Pval(i,:)] = CalcPCwithLag(Rvec1.data(:,i),v2, GFR);
-            
+            v2 = lagmatrix(vec2(:,i),lags);
+            [Pcorr(i,:),Pval(i,:)] = CalcPCwithLag(vec1(:,i),v2, GFR);
         end
-        
-        delete(Rvec1);
-        delete(Rvec2);
-        delete(obMAT1);
-        delete(obMAT2);
-        clear('Rvec1');
-        clear('Rvec2');
-        clear('obMAT1');
-        clear('obMAT2');
+%         
+%         keyMAT1 = '00001';
+%         obMAT1 = shmobject(keyMAT1,vec1);
+%         clear vec1;
+%         keyMAT2 = '00002';
+%         obMAT2 = shmobject(keyMAT2,vec2);
+%         clear vec2;
+%         
+%         Rvec1 = shmref(keyMAT1);
+%         Rvec2 = shmref(keyMAT2);
+%         
+%         parfor i=1:numcom
+%             
+%             v2 = lagmatrix(Rvec2.data(:,i),lags);
+%             [Pcorr(i,:),Pval(i,:)] = CalcPCwithLag(Rvec1.data(:,i),v2, GFR);
+%             
+%         end
+%         
+%         delete(Rvec1);
+%         delete(Rvec2);
+%         delete(obMAT1);
+%         delete(obMAT2);
+%         clear('Rvec1');
+%         clear('Rvec2');
+%         clear('obMAT1');
+%         clear('obMAT2');
         
         Pcorr(Pval<0.05)=nan;
         [ParCor,ind]=nanmax(Pcorr,[],2);
