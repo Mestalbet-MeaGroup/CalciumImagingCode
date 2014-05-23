@@ -1,26 +1,33 @@
 function [AlignedMat,lags,lagmat] = AlignTimeSeries(traces,lags,fs);
 % Align two time series. Designed especially for calcium traces. 
 AlignedMat=[];
-% fs= 14.235; %sampling rate;
-%% Align by corr
-[~,idx]= max(squeeze(traces(1,:,:)),[],1);
-idx=floor(mean(idx));
-traces = traces(:,idx-floor(idx/2):idx+floor(idx/2),:);
-lags=lags(idx-floor(idx/2):idx+floor(idx/2));
-[~,num]=max(max(squeeze((max(traces,[],2))),[],1));
 
-for i=1:size(traces,1)
-    for j=6:size(traces,3)
-        [lag,~]=CalcCorrRaw(zscore(squeeze(traces(i,:,j))),zscore(squeeze(traces(i,:,num))),30);
+%% Align by corr
+% [~,idx]= max(squeeze(traces(1,:,:)),[],1);
+% idx=floor(mean(idx));
+% traces = traces(:,idx-floor(idx/2):idx+floor(idx/2),:);
+% lags=lags(idx-floor(idx/2):idx+floor(idx/2));
+[~,num]=max(max(squeeze((max(traces,[],2))),[],1));
+[~,BestROI]=max(max(squeeze((max(traces,[],1))),[],1));
+for i=1:size(traces,1) %ROI
+    for j=1:size(traces,3) %trials
+        [lag,~]=CalcCorrRaw(zscore(squeeze(traces(i,:,j))),zscore(squeeze(traces(BestROI,:,num))),30);
         AlignedMat(i,:,j)=lagmatrix(squeeze(traces(i,:,j)),-1*(lag));
         lagmat(i,:,j)=lagmatrix(lags,-1*(lag));
     end
 end
-[~,idx]=max(mean(squeeze(AlignedMat(1,:,:)),2));
-vec = idx-60*4:idx+80*4;
-lags=lags(vec);
-AlignedMat=AlignedMat(:,vec,:);
-lagmat=lagmat(:,vec,:);
+% [~,idx]=max(mean(squeeze(AlignedMat(1,:,:)),2)); %add if statement to check index
+% vec = idx-60*4:idx+80*4;
+% if ~isempty(find(vec<0))||(max(vec)>numel(lags))
+%    if  ~isempty(find(vec<0))
+%        vec=1:idx+80*4+60*4;
+%    else
+%        vec=idx-60*4:numel(lags);
+%    end
+% end
+% lags=lags(vec);
+% AlignedMat=AlignedMat(:,vec,:);
+% lagmat=lagmat(:,vec,:);
 
 %% Cluster each channel
 % [colors,clustI]=ClusterTraces(AlignedMat);
@@ -106,22 +113,22 @@ lagmat=lagmat(:,vec,:);
 % title('Aligned Reconstructed Traces for All Channels');
 % xlabel('Time [Sec]');
 %% 
-
-    function AlignedTrace = AlignTraces(tr)
-        [~,numM]=max(max(tr,[],1));
-        for jj=1:size(tr,2)
-            [lg,~]=CalcCorrRaw(zscore(tr(:,jj)),zscore(tr(:,numM)),30);
-            AlignedTrace(:,jj)=lagmatrix(tr(:,jj),-1*(lg));
-        end
-    end
-
-    function [colors,clustI]=ClusterTraces(AlignedMat);
-        for ii=1:size(AlignedMat,1);
-            tr{ii} = myNeuralNetworkFunction2(squeeze(AlignedMat(ii,:,:)));
-            colors{ii} = cbrewer('qual','Set1',size(tr{ii},1));
-            [clustI{ii},~]=find(tr{ii}==1);
-        end
-    end
+% 
+%     function AlignedTrace = AlignTraces(tr)
+%         [~,numM]=max(max(tr,[],1));
+%         for jj=1:size(tr,2)
+%             [lg,~]=CalcCorrRaw(zscore(tr(:,jj)),zscore(tr(:,numM)),30);
+%             AlignedTrace(:,jj)=lagmatrix(tr(:,jj),-1*(lg));
+%         end
+%     end
+% 
+%     function [colors,clustI]=ClusterTraces(AlignedMat);
+%         for ii=1:size(AlignedMat,1);
+%             tr{ii} = myNeuralNetworkFunction2(squeeze(AlignedMat(ii,:,:)));
+%             colors{ii} = cbrewer('qual','Set1',size(tr{ii},1));
+%             [clustI{ii},~]=find(tr{ii}==1);
+%         end
+%     end
 
 %% Align by peaks
 %

@@ -1,4 +1,4 @@
-function [PairWisePSTH,PairWiseLags]=CalcPSTHastroNeuro(t,ic,traces,time,bursts,burste,varargin)
+function [PairWisePSTH,PairWiseLags]=CalcPSTHastroNeuro(t,ic,traces,time,bursts,burste,strict,varargin)
 % Function which calculates the pairwise PSTH using individual astrocytic
 % events as triggers and an individual electrode's spikes.
 % Input: t = spike times in units of samples, ic = index channel, time =
@@ -7,7 +7,7 @@ function [PairWisePSTH,PairWiseLags]=CalcPSTHastroNeuro(t,ic,traces,time,bursts,
 pre= 5000; %ms
 post = pre;
 bin = 100; %ms
-if varargin{1}~=2
+if (varargin{1}~=2)&&(varargin{1}~=0)
     PairWisePSTH=nan(size(traces,2),size(ic,2));
     PairWiseLags=PairWisePSTH;
 else
@@ -20,19 +20,26 @@ temp  = mpsth(t(ic(3,1):ic(4,1))./12000,time(floor(end/2)),'tb',1,'fr',0,'pre',p
 lagTimes=temp(:,1);
 fun = @(block_struct) nanmax(block_struct.data);
 for i=1:size(traces,2)
-    [~,idx,~] = deleteoutliers(traces(:,i),0.05,0);
-    test = zeros(max(idx),1);
-    test(idx)=traces(idx,i);
-    res = blockproc(test,[50,1],fun);
-    res(res==0)=[];
-    bs = ismember(traces(:,i),res);
-    bs = find(bs);
-    bs(diff(bs)<50)=[];
+    if strict
+   %---------------Conservative Peak Detection----------------------%
+        [~,idx,~] = deleteoutliers(traces(:,i),0.05,0);
+        fun = @(block_struct) max(block_struct.data);
+        test = zeros(max(idx),1);
+        test(idx)=traces(idx,i);
+        res = blockproc(test,[50,1],fun);
+        res(res==0)=[];
+        bs = ismember(traces(:,i),res);
+        bs = find(bs);
+        bs(diff(bs)<50)=[];
+%---------------Relaxed Peak Detection----------------------%
+    else
+        bs = FindCaCalciumPeaks(traces(:,i));
+    end
     for j=1:size(ic,2)
         ps = mpsth(t(ic(3,j):ic(4,j))./12000,time(bs),'tb',0,'fr',0,'pre',pre,'post',post,'binsz',bin);
         if varargin{1} == 0 %No Normalization
-            [PairWisePSTH(i,j), idx] = max(ps);
-            PairWiseLags(i,j) = lagTimes(idx);
+            PairWisePSTH(i,j,:) = ps;
+            PairWiseLags = lagTimes;
         end
         if varargin{1} == 1 %Normalize by the ratio of spikes within sample period to number of spikes times number of trials. 
             [PairWisePSTH(i,j), idx] = max(ps);
