@@ -84,13 +84,13 @@
 %   -transparent - option indicating that the figure background is to be
 %                  made transparent (png, pdf and eps output only).
 %   -m<val> - option where val indicates the factor to magnify the
-%             on-screen figure dimensions by when generating bitmap
+%             on-screen figure pixel dimensions by when generating bitmap
 %             outputs. Default: '-m1'.
 %   -r<val> - option val indicates the resolution (in pixels per inch) to
-%             export bitmap outputs at, keeping the dimensions of the
-%             on-screen figure. Default: sprintf('-r%g', get(0,
-%             'ScreenPixelsPerInch')). Note that the -m and -r options
-%             change the same property.
+%             export bitmap and vector outputs at, keeping the dimensions
+%             of the on-screen figure. Default: '-r864' (for vector output
+%             only). Note that the -m option overides the -r option for
+%             bitmap outputs only.
 %   -native - option indicating that the output resolution (when outputting
 %             a bitmap format) should be such that the vertical resolution
 %             of the first suitable image found in the figure is at the
@@ -122,8 +122,8 @@
 %             of being overwritten (default).
 %   -bookmark - option to indicate that a bookmark with the name of the
 %               figure is to be created in the output file (pdf only).
-%   handle - The handle of the figure or axes (can be an array of handles
-%            of several axes, but these must be in the same figure) to be
+%   handle - The handle of the figure, axes or uipanels (can be an array of
+%            handles, but the objects must be in the same figure) to be
 %            saved. Default: gcf.
 %
 %OUT:
@@ -136,7 +136,7 @@
 %
 %   See also PRINT, SAVEAS.
 
-% Copyright (C) Oliver Woodford 2008-2012
+% Copyright (C) Oliver Woodford 2008-2014
 
 % The idea of using ghostscript is inspired by Peder Axensten's SAVEFIG
 % (fex id: 10889) which is itself inspired by EPS2PDF (fex id: 5782).
@@ -165,6 +165,12 @@
 %           bookmarking of figures in pdf files.
 % 09/05/12: Incorporate patch of Arcelia Arrieta (many thanks), to keep
 %           tick marks fixed.
+% 12/12/12: Add support for isolating uipanels. Thanks to michael for
+%           suggesting it.
+% 25/09/13: Add support for changing resolution in vector formats. Thanks
+%           to Jan Jaap Meijer for suggesting it.
+% 07/05/14: Add support for '~' at start of path. Thanks to Sally Warner
+%           for suggesting it.
 
 function [im, alpha] = export_fig(varargin)
 % Make sure the figure is rendered correctly _now_ so that properties like
@@ -173,11 +179,16 @@ drawnow;
 % Parse the input arguments
 [fig, options] = parse_args(nargout, varargin{:});
 % Isolate the subplot, if it is one
-cls = strcmp(get(fig(1), 'Type'), 'axes');
+cls = all(ismember(get(fig, 'Type'), {'axes', 'uipanel'}));
 if cls
     % Given handles of one or more axes, so isolate them from the rest
     fig = isolate_axes(fig);
 else
+    % Check we have a figure
+    if ~isequal(get(fig, 'Type'), 'figure');
+        error('Handle must be that of a figure, axes or uipanel');
+    end
+    % Get the old InvertHardcopy mode
     old_mode = get(fig, 'InvertHardcopy');
 end
 % Hack the font units where necessary (due to a font rendering bug in
@@ -398,7 +409,7 @@ if isvector(options)
         pdf_nam = [tempname '.pdf'];
     end
     % Generate the options for print
-    p2eArgs = {renderer};
+    p2eArgs = {renderer, sprintf('-r%d', options.resolution)};
     if options.colourspace == 1
         p2eArgs = [p2eArgs {'-cmyk'}];
     end
@@ -410,7 +421,7 @@ if isvector(options)
         print2eps(tmp_nam, fig, p2eArgs{:});
         % Remove the background, if desired
         if options.transparent && ~isequal(get(fig, 'Color'), 'none')
-            eps_remove_background(tmp_nam);
+            eps_remove_background(tmp_nam, 1 + using_hg2(fig));
         end
         % Add a bookmark to the PDF if desired
         if options.bookmark
@@ -477,8 +488,9 @@ options = struct('name', 'export_fig_out', ...
                  'append', false, ...
                  'im', nout == 1, ...
                  'alpha', nout == 2, ...
-                 'aa_factor', 3, ...
-                 'magnify', 1, ...
+                 'aa_factor', 0, ...
+                 'magnify', [], ...
+                 'resolution', [], ...
                  'bookmark', false, ...
                  'quality', []);
 native = false; % Set resolution to native of an image
@@ -535,7 +547,7 @@ for a = 1:nargin-1
                         case 'm'
                             options.magnify = val;
                         case 'r'
-                            options.magnify = val ./ get(0, 'ScreenPixelsPerInch');
+                            options.resolution = val;
                         case 'q'
                             options.quality = max(val, 0);
                     end
@@ -565,6 +577,28 @@ for a = 1:nargin-1
     end
 end
 
+% Set default anti-aliasing now we know the renderer
+if options.aa_factor == 0
+    options.aa_factor = 1 + 2 * (~using_hg2(fig) | (options.renderer == 3));
+end
+
+% Convert user dir '~' to full path
+if numel(options.name) > 2 && options.name(1) == '~' && (options.name(2) == '/' || options.name(2) == '\')
+    options.name = fullfile(char(java.lang.System.getProperty('user.home')), options.name(2:end));
+end
+
+% Compute the magnification and resolution
+if isempty(options.magnify)
+    if isempty(options.resolution)
+        options.magnify = 1;
+        options.resolution = 864;
+    else
+        options.magnify = options.resolution ./ get(0, 'ScreenPixelsPerInch');
+    end
+elseif isempty(options.resolution)
+    options.resolution = 864;
+end  
+
 % Check we have a figure handle
 if isempty(fig)
     error('No figure found');
@@ -576,7 +610,7 @@ if ~isvector(options) && ~isbitmap(options)
 end
 
 % Check whether transparent background is wanted (old way)
-if isequal(get(fig, 'Color'), 'none')
+if isequal(get(ancestor(fig(1), 'figure'), 'Color'), 'none')
     options.transparent = true;
 end
 
@@ -726,7 +760,7 @@ v = [max(t-1, 1) min(b+1, h) max(l-1, 1) min(r+1, w)];
 A = A(v(1):v(2),v(3):v(4),:);
 return
 
-function eps_remove_background(fname)
+function eps_remove_background(fname, count)
 % Remove the background of an eps file
 % Open the file
 fh = fopen(fname, 'r+');
@@ -734,19 +768,20 @@ if fh == -1
     error('Not able to open file %s.', fname);
 end
 % Read the file line by line
-while true
+while count
     % Get the next line
     l = fgets(fh);
     if isequal(l, -1)
         break; % Quit, no rectangle found
     end
     % Check if the line contains the background rectangle
-    if isequal(regexp(l, ' *0 +0 +\d+ +\d+ +rf *[\n\r]+', 'start'), 1)
+    if isequal(regexp(l, ' *0 +0 +\d+ +\d+ +r[fe] *[\n\r]+', 'start'), 1)
         % Set the line to whitespace and quit
         l(1:regexp(l, '[\n\r]', 'start', 'once')-1) = ' ';
         fseek(fh, -numel(l), 0);
         fprintf(fh, l);
-        break;
+        % Reduce the count
+        count = count - 1;
     end
 end
 % Close the file

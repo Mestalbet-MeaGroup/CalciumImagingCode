@@ -1,4 +1,3 @@
-function varargout = ghostscript(cmd)
 %GHOSTSCRIPT  Calls a local GhostScript executable with the input command
 %
 % Example:
@@ -20,22 +19,36 @@ function varargout = ghostscript(cmd)
 %   status - 0 iff command ran without problem.
 %   result - Output from ghostscript.
 
-% Copyright: Oliver Woodford, 2009-2010
+% Copyright: Oliver Woodford, 2009-2013
 
 % Thanks to Jonas Dorn for the fix for the title of the uigetdir window on
 % Mac OS.
-
 % Thanks to Nathan Childress for the fix to the default location on 64-bit
 % Windows systems.
-
 % 27/4/11 - Find 64-bit Ghostscript on Windows. Thanks to Paul Durack and
 % Shaun Kline for pointing out the issue
-
 % 4/5/11 - Thanks to David Chorlian for pointing out an alternative
 % location for gs on linux.
+% 12/12/12 - Add extra executable name on Windows. Thanks to Ratish
+% Punnoose for highlighting the issue.
+% 28/6/13 - Fix error using GS 9.07 in Linux. Many thanks to Jannick
+% Steinbring for proposing the fix.
+% 24/10/13 - Fix error using GS 9.07 in Linux. Many thanks to Johannes
+% for the fix.
+% 23/01/2014 - Add full path to ghostscript.txt in warning. Thanks to Koen
+% Vermeer for raising the issue.
 
+function varargout = ghostscript(cmd)
+% Initialize any required system calls before calling ghostscript
+shell_cmd = '';
+if isunix
+    shell_cmd = 'export LD_LIBRARY_PATH=""; '; % Avoids an error on Linux with GS 9.07
+end
+if ismac
+    shell_cmd = 'export DYLD_LIBRARY_PATH=""; ';  % Avoids an error on Mac with GS 9.07
+end
 % Call ghostscript
-[varargout{1:nargout}] = system(sprintf('"%s" %s', gs_path, cmd));
+[varargout{1:nargout}] = system(sprintf('%s"%s" %s', shell_cmd, gs_path, cmd));
 return
 
 function path_ = gs_path
@@ -48,7 +61,7 @@ if check_gs_path(path_)
 end
 % Check whether the binary is on the path
 if ispc
-    bin = {'gswin32c.exe', 'gswin64c.exe'};
+    bin = {'gswin32c.exe', 'gswin64c.exe', 'gs'};
 else
     bin = {'gs'};
 end
@@ -85,9 +98,9 @@ if ispc
         return
     end
 else
-    bin = {'/usr/bin/gs', '/usr/local/bin/gs'};
-    for a = 1:numel(bin)
-        path_ = bin{a};
+    executable = {'/usr/bin/gs', '/usr/local/bin/gs'};
+    for a = 1:numel(executable)
+        path_ = executable{a};
         if check_store_gs_path(path_)
             return
         end
@@ -128,13 +141,17 @@ if ~good
 end
 % Update the current default path to the path found
 if ~user_string('ghostscript', path_)
-    warning('Path to ghostscript installation could not be saved. Enter it manually in ghostscript.txt.');
+    warning('Path to ghostscript installation could not be saved. Enter it manually in %s.', fullfile(fileparts(which('user_string.m')), '.ignore', 'ghostscript.txt'));
     return
 end
 return
 
 function good = check_gs_path(path_)
 % Check the path is valid
-[good message] = system(sprintf('"%s" -h', path_));
+shell_cmd = '';
+if ismac
+    shell_cmd = 'export DYLD_LIBRARY_PATH=""; ';  % Avoids an error on Mac with GS 9.07
+end
+[good, message] = system(sprintf('%s"%s" -h', shell_cmd, path_));
 good = good == 0;
 return

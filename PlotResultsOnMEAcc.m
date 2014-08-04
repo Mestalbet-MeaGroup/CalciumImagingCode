@@ -76,8 +76,8 @@ max_y = size(MeaImage,2);
 scale = 0.96; %pixels/um
 [X,Y] = meshgrid(0:1:max_x-1);
 Z = zeros(size(X));
-mesh(X,Y,Z,'FaceColor','texturemap','CData',double(rgb2ind(image, colormap([jet(65536-numcol);gray(numcol)]))));
-set(gcf,'Renderer','OpenGL');
+% mesh(X,Y,Z,'FaceColor','texturemap','CData',double(rgb2ind(image, colormap([jet(65536-numcol);gray(numcol)]))));
+% set(gcf,'Renderer','OpenGL');
 xlim([0 max_x]);
 ylim([0 max_y]);
 hold on;
@@ -108,8 +108,8 @@ set(gca,'YTick',vec(2:446:end), 'YTickLabel', round(vec1(2:446:end).*scale));
 xlabel('Distance in um from Center of Ca Image');
 ylabel('Distance in um from Center of Ca Image');
 zlabel('Unbiased Normalized Cross Correlation');
-maximize(gcf)
-export_fig([name 'ccA2N_MEA3D.png'],'-native','-nocrop');
+% maximize(gcf)
+% export_fig([name 'ccA2N_MEA3D.png'],'-native','-nocrop');
 close all;
 %% Add Correlation between electrodes on 3D plot
 % numcomb = nchoosek(1:numel(elecCounter),2);

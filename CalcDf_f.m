@@ -31,12 +31,14 @@ f = savgol(t0,t0*2,0);
 dfTraces=filtfilt(f,1,r');
 
 %-exponentially weighted moving average from citation-%
-% dfTraces = EWMA(r',t0); 
+dfTraces = EWMA(r',t0); 
 %--%
 
 dfTraces=dfTraces(:,length(time)+1:2*length(time));
-dfTraces = dfTraces(:,500:end-100); % cut ends off recording
-time = time(500:end-100);
+% dfTraces = dfTraces(:,500:end-100); % cut ends off recording
+% time = time(500:end-100);
+dfTraces = dfTraces(:,5:end-10); % cut ends off recording
+time = time(5:end-10);
 
 %---De-trend data to start at Zero-mean---%
 data1 = iddata(dfTraces',[],1/fs);

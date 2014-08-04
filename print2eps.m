@@ -20,7 +20,7 @@
 %   fig_handle - The handle of the figure to be saved. Default: gcf.
 %   options - Additional parameter strings to be passed to print.
 
-% Copyright (C) Oliver Woodford 2008-2012
+% Copyright (C) Oliver Woodford 2008-2014
 
 % The idea of editing the EPS file to change line styles comes from Jiro
 % Doke's FIXPSLINESTYLE (fex id: 17928)
@@ -47,6 +47,12 @@
 % 26/10/12: Fix issue to do with swapping fonts changing other fonts and
 %           sizes we don't want, due to listeners. Thanks to Malcolm Hudson
 %           for reporting the issue.
+% 22/03/13: Extend font swapping to axes labels. Thanks to Rasmus Ischebeck
+%           for reporting the issue.
+% 23/07/13: Bug fix to font swapping. Thank to George for reporting the
+%           issue.
+% 13/08/13: Fix MATLAB feature of not exporting white lines correctly.
+%           Thanks to Sebastian Heﬂlinger for reporting it.
 
 function print2eps(name, fig, varargin)
 options = {'-depsc2'};
@@ -59,8 +65,12 @@ end
 if numel(name) < 5 || ~strcmpi(name(end-3:end), '.eps')
     name = [name '.eps']; % Add the missing extension
 end
+% Set paper size
+old_pos_mode = get(fig, 'PaperPositionMode');
+old_orientation = get(fig, 'PaperOrientation');
+set(fig, 'PaperPositionMode', 'auto', 'PaperOrientation', 'portrait');
 % Find all the used fonts in the figure
-font_handles = findobj(fig, '-property', 'FontName');
+font_handles = findall(fig, '-property', 'FontName');
 fonts = get(font_handles, 'FontName');
 if ~iscell(fonts)
     fonts = {fonts};
@@ -92,12 +102,15 @@ fonts_new = fonts;
 for a = 1:size(font_swap, 2)
     font_swap{1,a} = find(strcmp(fontslu{require_swap(a)}, fontsl));
     font_swap{2,a} = matlab_fonts{unused_fonts(a)};
-    font_swap{3,a} = fonts{font_swap{1,end}(1)};
+    font_swap{3,a} = fonts{font_swap{1,a}(1)};
     fonts_new(font_swap{1,a}) = {font_swap{2,a}};
 end
 % Swap the fonts
 if ~isempty(font_swap)
-    fonts_size = cell2mat(get(font_handles, 'FontSize'));
+    fonts_size = get(font_handles, 'FontSize');
+    if iscell(fonts_size)
+        fonts_size = cell2mat(fonts_size);
+    end
     M = false(size(font_handles));
     % Loop because some changes may not stick first time, due to listeners
     c = 0;
@@ -120,10 +133,6 @@ if ~isempty(font_swap)
     [M, M] = sort(M);
     update = reshape(update(M), 1, []);
 end
-% Set paper size
-old_pos_mode = get(fig, 'PaperPositionMode');
-old_orientation = get(fig, 'PaperOrientation');
-set(fig, 'PaperPositionMode', 'auto', 'PaperOrientation', 'portrait');
 % MATLAB bug fix - black and white text can come out inverted sometimes
 % Find the white and black text
 white_text_handles = findobj(fig, 'Type', 'text');
@@ -137,11 +146,22 @@ white_text_handles = white_text_handles(M == 3);
 % Set the font colors slightly off their correct values
 set(black_text_handles, 'Color', [0 0 0] + eps);
 set(white_text_handles, 'Color', [1 1 1] - eps);
+% MATLAB bug fix - white lines can come out funny sometimes
+% Find the white lines
+white_line_handles = findobj(fig, 'Type', 'line');
+M = get(white_line_handles, 'Color');
+if iscell(M)
+    M = cell2mat(M);
+end
+white_line_handles = white_line_handles(sum(M, 2) == 3);
+% Set the line color slightly off white
+set(white_line_handles, 'Color', [1 1 1] - 0.00001);
 % Print to eps file
 print(fig, options{:}, name);
-% Reset the font colors
+% Reset the font and line colors
 set(black_text_handles, 'Color', [0 0 0]);
 set(white_text_handles, 'Color', [1 1 1]);
+set(white_line_handles, 'Color', [1 1 1]);
 % Reset paper size
 set(fig, 'PaperPositionMode', old_pos_mode, 'PaperOrientation', old_orientation);
 % Correct the fonts
@@ -159,13 +179,21 @@ if ~isempty(font_swap)
         return
     end
 end
-% Fix the line styles
-try
-    fix_lines(name);
-catch
-    warning('fix_lines() failed. This is usually because the figure contains a large number of patch objects. Consider exporting to a bitmap format in this case.');
+if using_hg2(fig)
+    % Move the bounding box to the top of the file
+    try
+        move_bb(name);
+    catch
+        warning('move_bb() failed. This is usually because the figure contains a large number of patch objects. Consider exporting to a bitmap format in this case.');
+    end
+else
+    % Fix the line styles
+    try
+        fix_lines(name);
+    catch
+        warning('fix_lines() failed. This is usually because the figure contains a large number of patch objects. Consider exporting to a bitmap format in this case.');
+    end
 end
-return
 
 function swap_fonts(fname, varargin)
 % Read in the file
@@ -183,7 +211,8 @@ fclose(fh);
 
 % Replace the font names
 for a = 1:2:numel(varargin)
-    fstrm = regexprep(fstrm, [varargin{a} '-?[a-zA-Z]*\>'], varargin{a+1}(~isspace(varargin{a+1})));
+    %fstrm = regexprep(fstrm, [varargin{a} '-?[a-zA-Z]*\>'], varargin{a+1}(~isspace(varargin{a+1})));
+    fstrm = regexprep(fstrm, varargin{a}, varargin{a+1}(~isspace(varargin{a+1})));
 end
 
 % Write out the updated file
@@ -198,4 +227,36 @@ catch ex
     rethrow(ex);
 end
 fclose(fh);
-return
+
+function move_bb(fname)
+% Read in the file
+fh = fopen(fname, 'r');
+if fh == -1
+    error('File %s not found.', fname);
+end
+try
+    fstrm = fread(fh, '*char')';
+catch ex
+    fclose(fh);
+    rethrow(ex);
+end
+fclose(fh);
+
+% Find the bounding box
+[s, e] = regexp(fstrm, '%%BoundingBox: [\w\s()]*%%');
+if numel(s) == 2
+    fstrm = fstrm([1:s(1)-1 s(2):e(2)-2 e(1)-1:s(2)-1 e(2)-1:end]);
+end
+
+% Write out the updated file
+fh = fopen(fname, 'w');
+if fh == -1
+    error('Unable to open %s for writing.', fname2);
+end
+try
+    fwrite(fh, fstrm, 'char*1');
+catch ex
+    fclose(fh);
+    rethrow(ex);
+end
+fclose(fh);

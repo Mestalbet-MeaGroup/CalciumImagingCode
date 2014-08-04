@@ -6,7 +6,7 @@ function [Corr]=NormalizedCorrelationwithStat(a,b,t,time)
 % statistic. 
 % Written by: Noah Levine-Small
 % Revision 1: 30/04/2013
-b=filter(MakeGaussian(0,30,120),1,b);
+% b=filter(MakeGaussian(0,30,120),1,b);
 Corr = NormalizedCorrelation(a,b); % Return normalized, unbiased maximum correlation with lag of 2000.
 CorrPerm=zeros(1,500);
 for i=1:500
