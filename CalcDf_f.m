@@ -20,15 +20,14 @@ f0=f0(length(time)+1:2*length(time),:)';
 
 
 %---Relative fluoresence signal---%
-
 r = ((traces-f0)./f0)';
 
 %---Apply noise filtering---%
 r = [flipud(r);r;flipud(r)];
 
 %-Savitzky-Golay Instead-%
-f = savgol(t0,t0*2,0);
-dfTraces=filtfilt(f,1,r');
+% f = savgol(t0,t0*2,0);
+% dfTraces=filtfilt(f,1,r');
 
 %-exponentially weighted moving average from citation-%
 dfTraces = EWMA(r',t0); 

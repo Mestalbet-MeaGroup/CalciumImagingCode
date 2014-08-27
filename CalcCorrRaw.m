@@ -4,6 +4,7 @@ auto_a = xcorr(a,'unbiased');
 auto_b = xcorr(b,'unbiased');
 [Corr,~] = xcorr(a,b,maxlag,'unbiased');
 Corr = Corr ./ sqrt(auto_a(len) .* auto_b(len)); % normalize by values at zero lag
-[Corr,lag] = max(Corr(:));
-lag = lag - maxlag;
+lag = -maxlag:maxlag;
+% [Corr,lag] = max(Corr(:));
+% lag = lag - maxlag;
 end
